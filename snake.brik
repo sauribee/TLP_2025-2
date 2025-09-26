@@ -1,0 +1,60 @@
+snake 1.0
+
+game "snake" {
+
+    board {
+        width = 20;
+        height = 20;
+        cell_size = 20;
+        wrap = false;
+        colors = [];
+    }
+
+    controls {
+        right_mov = "right";
+        left_mov = "left";
+        down_mov = "down";
+        up_mov = "up";
+        pause = "p";
+        restart = "r";
+    }
+
+    snake {
+        tick_ms = 120;
+        initial_length = 5;
+        growth_per_apple = 3;
+        spawn = "random";
+        apple_points = 10;
+    }
+
+    level {
+        grid = [
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1]
+        ];
+    }
+    
+    rules_end_game {
+        on_out_of_bounds = "end";
+        on_self_collision = "end"; 
+        on_wall_collision = "end";
+    }
+
+    rules_speed_progression {
+        speedup_after_apple = 5;
+        min_tick_ms = 60;
+    }
+
+    rules_spawning {
+        apple_respawn_ticks = 5;
+        max_apples = 1;
+    }
+}
