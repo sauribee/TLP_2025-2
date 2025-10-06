@@ -1,32 +1,32 @@
-# Brick Game Engine — Deliverable 1 (Lexer · Parser · AST · Symbol Table)
+# Brick Game Engine — Assignment 1 - Practice project (Lexer · Parser · AST · Symbol Table)
 
 **Authors:** Juan Miguel Páez Tatis, Santiago Uribe Echavarría  
 **Course:** Theory of Programming Languages  
 **Instructor:** Fernán Alonso Villa Garzón  
 **Date:** October 2025
 
-This repository contains a minimal C++11 toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
-Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
+This repository contains a minimal C++ toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
+Assigment 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
 
 ---
 
 ## Repository layout
 
-```TLP_2025-2/
+```
+TLP_2025-2/
 ├─ src/                  # Source code
 │  ├─ main.cpp           # CLI entry point (--dump-ast, --dump-symbols, --json)
 │  ├─ lexer.c++          # Lexer
 │  ├─ ast_parser.hpp     # AST types + (recursive-descent / LL) parser
 │  ├─ semantics.hpp      # Symbol table + basic semantic checks
-│  └─ ...                # Other headers/implementations
 ├─ games/                # Language examples
 │  ├─ tetris.brik
 │  └─ snake.brik
 ├─ docs/                 # Technical documentation
-│  ├─ LANGUAGE_SPEC.md   # Language spec (this deliverable)
-│  ├─ GRAMMAR.ebnf       # Approx. grammar in EBNF (this deliverable)
-│  └─ tokens_list.txt    # Token reference (optional)
-├─ out/                  # Outputs (AST, symbols, diagnostics, JSON)
+│  ├─ LANGUAGE_SPEC.md   # Language spec 
+│  ├─ GRAMMAR.ebnf       # Approx. grammar in EBNF 
+│  └─ tokens_list.txt    # Token reference 
+├─ out/                  # Outputs examples (AST, symbols, diagnostics, JSON)
 ├─ .gitignore
 └─ README.md
 ```
@@ -39,7 +39,8 @@ Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table const
 
 Compile **all** sources under `src/`:
 
-```bash
+```
+bash
 g++ -std=c++11 -O2 -Wall -Wextra -s src/*.c++ -o brik_parser.exe
 ```
 
@@ -50,13 +51,15 @@ g++ -std=c++11 -O2 -Wall -Wextra -s src/*.c++ -o brik_parser.exe
 
 ## Usage
 
-```bash
+```
+bash
 brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
 ```
 
 **Examples:**
 
-```powershell
+```
+powershell
 .brik_parser.exe --dump-ast . etris.brik
 
 .brik_parser.exe --dump-symbols .\snake.brik
@@ -80,7 +83,8 @@ brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
 - **Symbol Table (text)**: per-scope key/value view for the engine.
 - **Symbol Table (JSON)**: dependency-free C++11 emitter. Example:
 
-```json
+```
+json
 {
   "scopes": {
     "game":    { "title": "Tetris", "version": 1.0, "id": "tetris", "available_pieces": ["I","O"] },
@@ -100,7 +104,7 @@ brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
 
 ---
 
-## Language at a glance (this deliverable)
+## Language at a glance 
 
 - **Lexical elements:** see `docs/tokens_list.txt` and the **Lexicon** section in `docs/LANGUAGE_SPEC.md`.
 - **Grammar:** `docs/GRAMMAR.ebnf` describes `game`, `board`, `controls`, `pieces`, `piece_*`, and optional `rules_*` blocks.
