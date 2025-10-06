@@ -1,4 +1,4 @@
-# Brick Game Engine — Deliverable 1 (Lexer · Parser · AST · Symbol Table)
+# Brick Game Engine — Assignment 1 - Practice project (Lexer · Parser · AST · Symbol Table)
 
 **Authors:** Juan Miguel Páez Tatis, Santiago Uribe Echavarría  
 **Course:** Theory of Programming Languages  
@@ -6,7 +6,7 @@
 **Date:** October 2025
 
 This repository contains a minimal C++ toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
-Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
+Assigment 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
 
 ---
 
@@ -104,7 +104,7 @@ json
 
 ---
 
-## Language at a glance (this deliverable)
+## Language at a glance 
 
 - **Lexical elements:** see `docs/tokens_list.txt` and the **Lexicon** section in `docs/LANGUAGE_SPEC.md`.
 - **Grammar:** `docs/GRAMMAR.ebnf` describes `game`, `board`, `controls`, `pieces`, `piece_*`, and optional `rules_*` blocks.
