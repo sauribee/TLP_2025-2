@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 #include <cstring>
-
 #include "lexer.c++"
 #include "ast_parser.hpp"
 #include "semantics.hpp"
@@ -127,25 +126,22 @@ int main(int argc, char** argv) {
         }
 
         // 4) Semantics + symbol table 
+        // after analyzeSemantics(...)
         std::vector<Diagnostic> diags;
         SymbolTable table = analyzeSemantics(ast.get(), diags);
 
-        if (dump_symbols) {
-            std::cout << "\n=== Symbol Table ===\n";
-            printSymbols(table, std::cout);
+        std::cout << "\n=== Symbol Table ===\n";
+        printSymbols(table, std::cout);
+
+        // Print diagnostics only if there are any
+        if (!diags.empty()) {
+            std::cerr << "=== Diagnostics ===\n";
+            printDiagnostics(diags, std::cerr);
         }
 
-        if (jsonOut) {
-            std::ofstream jf(jsonOut, std::ios::out | std::ios::binary);
-            if (!jf) { std::cerr << "Could not open JSON output: " << jsonOut << "\n"; return 1; }
-            writeSymbolsJSON(table, jf);
-        }
-
-        std::cerr << "=== Diagnostics ===\n";
-        printDiagnostics(diags, std::cerr);
-
+        // exit code still reflects errors only
         bool hasError = false;
-        for (size_t i=0;i<diags.size();++i) if (diags[i].kind=="error"){ hasError=true; break; }
+        for (const auto& d : diags) if (d.kind == "error") { hasError = true; break; }
         return hasError ? 2 : 0;
 
     } catch (const ParseError& e) {
