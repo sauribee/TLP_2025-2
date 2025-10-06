@@ -8,6 +8,21 @@
 #include <stdexcept>
 #include <regex>
 
+#ifdef _WIN32
+  #include <direct.h>   // _mkdir on Windows
+#else
+  #include <sys/stat.h>
+  #include <sys/types.h>
+#endif
+
+static void ensureOutDir() {
+#ifdef _WIN32
+    _mkdir("out"); // ignore error if already exists
+#else
+    mkdir("out", 0755);
+#endif
+}
+
 enum class TokenType {
     // Literals
     INTEGER,
@@ -333,14 +348,15 @@ public:
             }
         }
         
-        std::ofstream outFile("resultados.txt");
+        ensureOutDir();
+        std::ofstream outFile("out/results.txt", std::ios::out | std::ios::trunc);
         if (outFile.is_open()) {
             for (const auto& token : tokens) {
                 outFile << token.toString() << std::endl;
             }
             outFile.close();
         }
-        
+
         tokens.push_back(Token(TokenType::EOF_TOKEN, "", line, column));
         
         return tokens;
@@ -350,7 +366,7 @@ public:
 void checkBrikFile(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Error: Cannot open file " << filename << std::endl;
+        std::cerr << "Cannot open file: " << filename << std::endl;
         return;
     }
     
@@ -362,20 +378,8 @@ void checkBrikFile(const std::string& filename) {
     Lexer lexer(content);
     try {
         std::vector<Token> tokens = lexer.tokenize();
-        std::cout << "Syntax OK. Tokens written to resultados.txt" << std::endl;
+        std::cout << "Syntax OK. Tokens written to out/results.txt" << std::endl;
     } catch (const std::exception& e) {
         std::cout << "Syntax error: " << e.what() << std::endl;
     }
 }
-
-#if 0
-int main() {
-    /if (argc > 1) {
-        checkBrikFile(argv[1]);
-    } else {
-        checkBrikFile("tetris.brik");
-    }
-    
-    return 0;
-}
-#endif 

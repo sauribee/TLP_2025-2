@@ -1,28 +1,40 @@
 # Brick Game Engine — Deliverable 1 (Lexer + Parser + AST + Symbol Table)
 
-Course project: **Brick Game Engine** — *Deliverable 1*  
-Goal: define a `.brik` language, tokenize it, parse it into an **AST**, and build a **Symbol Table** with basic semantic checks.
+**Authors:** Juan Miguel Páez Tatis, Santiago Uribe Echavarría  
+**Course:** Programming Language Theory (Teoría de lenguajes de programación)  
+**Instructor:** Fernán Alonso Villa Garzón
+**Date**  October 2025
 
-## Platform requirements
+This repository contains a minimal C++11 toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
+Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
 
-- C++11 compiler (tested with MinGW/GCC on Windows).
-- Compatible with **Windows XP** and **AMD Athlon XP**.
-- Keep size small; aim for **1.44 MB** total (exe + game files).
+---
+
+## Platform constraints
+
+- Target environment: **Windows XP** on **AMD Athlon XP**
+- Small footprint: executable + game files should fit on a **1.44 MB** floppy
+- Toolchain: C++11 (MinGW/GCC recommended)
+
+---
 
 ## Repository layout
 
-```
-/ (repo root)
-├─ lexer.c++
-├─ ast_parser.hpp
-├─ semantics.hpp
-├─ main.cpp
-├─ tetris.brik
-├─ snake.brik
-└─ docs/
-   ├─ LANGUAGE_SPEC.md
-   ├─ GRAMMAR.ebnf
-   └─ TESTS.md
+```├─ src/ # sources
+│ ├─ main.cpp # main entry with flags (--dump-ast, --dump-symbols, --json)
+│ ├─ parser_main.cpp # optional secondary entry (AST/syntax-only)
+│ ├─ lexer.c++ # provided lexer
+│ ├─ ast_parser.hpp # AST and recursive-descent parser
+│ └─ semantics.hpp # symbol table + semantic checks
+├─ games/ # language samples
+│ ├─ tetris.brik
+│ └─ snake.brik
+├─ docs/ # technical documentation
+│ ├─ LANGUAGE_SPEC.md
+│ ├─ GRAMMAR.ebnf
+│ └─ tokens_list.txt # lexer token order (reference)
+├─ out/ # test outputs (AST, symbols, diagnostics, JSON)
+└─ README.md
 ```
 
 > If you only use this archive of docs, place the files alongside your sources as shown above.
@@ -30,7 +42,7 @@ Goal: define a `.brik` language, tokenize it, parse it into an **AST**, and buil
 ## Build
 
 ```powershell
-g++ -std=c++11 -O2 -Wall -Wextra -s -o brik_parser.exe main.cpp
+g++ -std=c++11 -O2 -Wall -Wextra -s -o .\brik_parser.exe .\src\main.cpp
 ```
 
 - `-s` strips symbols to reduce size.
@@ -43,24 +55,19 @@ g++ -std=c++11 -O2 -Wall -Wextra -s -o brik_parser.exe main.cpp
 
 ## Usage
 
-```
-brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
+```brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
 ```
 
 Examples:
 
 ```powershell
-# AST to stdout
-.rik_parser.exe --dump-ast . etris.brik
+.brik_parser.exe --dump-ast . etris.brik
 
-# Symbol table (text) + diagnostics to stderr
-.rik_parser.exe --dump-symbols .\snake.brik
+.brik_parser.exe --dump-symbols .\snake.brik
 
-# Export symbol table to JSON (for next deliverable)
-.rik_parser.exe --json . etris.symbols.json . etris.brik
+.brik_parser.exe --json . etris.symbols.json . etris.brik
 
-# Everything, redirecting outputs
-.rik_parser.exe --dump-ast --dump-symbols --json .\snake.symbols.json .\snake.brik `
+.brik_parser.exe --dump-ast --dump-symbols --json .\snake.symbols.json .\snake.brik `
   > snake.ast.txt 2> snake.diag.txt
 ```
 

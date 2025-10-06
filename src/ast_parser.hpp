@@ -42,8 +42,8 @@ struct BoardBlock : Block { std::vector<std::unique_ptr<Assign>> props; };
 struct ControlsBlock : Block { std::vector<std::unique_ptr<Assign>> props; };
 
 struct PieceDef : Node {
-    std::string name;                         // e.g., "piece_I"
-    std::vector<std::unique_ptr<Assign>> props; // color, rotations, etc.
+    std::string name;                               // e.g., "piece_I"
+    std::vector<std::unique_ptr<Assign>> props;     // color, rotations, etc.
 };
 
 struct PiecesBlock : Block {
@@ -101,7 +101,7 @@ struct PToken {
         IDENTIFIER, VERSION, RULES_PREFIX, AVAILABLE_PIECES,
         ASSIGN, SEMICOLON,
         LBRACE, RBRACE, LBRACKET, RBRACKET, COMMA,
-        END // synthetic EOF
+        END 
     };
     Kind kind;
     std::string lex;
@@ -343,7 +343,6 @@ private:
         consume(PToken::Kind::LBRACKET, "'['");
         auto arr = std::unique_ptr<VArray>(new VArray());
         if (!check(PToken::Kind::RBRACKET)) {
-            // value (',' value)*
             arr->elems.push_back(parseValue());
             while (match(PToken::Kind::COMMA)) {
                 arr->elems.push_back(parseValue());
@@ -354,9 +353,6 @@ private:
     }
 };
 
-// ==========================
-//  AST DUMP (debug)
-// ==========================
 static void indent(std::ostream& os, int n){ for(int i=0;i<n;++i) os<<' '; }
 
 void dumpValue(const Value* v, std::ostream& os, int ind);
@@ -438,12 +434,6 @@ void dumpAST(const Program* p, std::ostream& os){
     os << "}\n";
 }
 
-// ==========================
-//  BRIDGE FROM EXISTING LEXER TOKENS
-// ==========================
-// Forward-declare the lexer's types so this header can be included
-// next to lexer.c++ without needing a separate header from you.
-// NOTE: we don't access any method bodies, only public fields.
 enum class TokenType; // forward decl
 class Token;          // forward decl
 
@@ -471,7 +461,6 @@ static std::vector<PToken> make_ptokens(const std::vector<Token>& in){
     return out;
 }
 
-// Numeric fallback mapping by observed enum order (works with your lexer).
 static PToken::Kind map_kind_from_lexer(TokenType t){
     const int v = (int) t;
     switch (v) {
@@ -500,20 +489,3 @@ static PToken::Kind map_kind_from_lexer(TokenType t){
         default:return PToken::Kind::END;
     }
 }
-
-// ==========================
-//  USAGE EXAMPLE (put in a .cpp)
-// ==========================
-/*
-#include "lexer.c++"
-#include "ast_parser.hpp"
-int main(){
-    std::ifstream f("tetris.brik"); std::stringstream buf; buf<<f.rdbuf();
-    Lexer lex(buf.str());
-    std::vector<Token> raw = lex.tokenize();
-    std::vector<PToken> pt = make_ptokens(raw);
-    Parser parser(std::move(pt));
-    std::unique_ptr<Program> ast = parser.parseProgram();
-    dumpAST(ast.get(), std::cout);
-}
-*/
