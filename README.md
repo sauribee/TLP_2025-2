@@ -1,7 +1,7 @@
 # Brick Game Engine — Deliverable 1 (Lexer + Parser + AST + Symbol Table)
 
-**Authors:** Juan Miguel Páez Tatis, Santiago Uribe Echavarría  
-**Course:** Programming Language Theory (Teoría de lenguajes de programación)  
+**Authors:** Juan Miguel Páez Tatis and Santiago Uribe Echavarría  
+**Course:** Programming Language Theory   
 **Instructor:** Fernán Alonso Villa Garzón
 **Date**  October 2025
 
@@ -20,7 +20,8 @@ Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table const
 
 ## Repository layout
 
-```├─ src/ # sources
+```
+├─ src/ # sources
 │ ├─ main.cpp # main entry with flags (--dump-ast, --dump-symbols, --json)
 │ ├─ parser_main.cpp # optional secondary entry (AST/syntax-only)
 │ ├─ lexer.c++ # provided lexer
@@ -41,26 +42,30 @@ Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table const
 
 ## Build
 
-```powershell
+```
+powershell
 g++ -std=c++11 -O2 -Wall -Wextra -s -o .\brik_parser.exe .\src\main.cpp
 ```
 
 - `-s` strips symbols to reduce size.
 - If you see codepage issues in PowerShell, you can switch to UTF‑8:
 
-  ```powershell
+  ```
+  powershell
   chcp 65001
   $OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
   ```
 
 ## Usage
 
-```brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
+```
+brik_parser.exe [--dump-ast] [--dump-symbols] [--json <file>] <file.brik>
 ```
 
 Examples:
 
-```powershell
+```
+powershell
 .brik_parser.exe --dump-ast . etris.brik
 
 .brik_parser.exe --dump-symbols .\snake.brik
