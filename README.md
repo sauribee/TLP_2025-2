@@ -3,7 +3,7 @@
 **Authors:** Juan Miguel Páez Tatis and Santiago Uribe Echavarría  
 **Course:** Programming Language Theory   
 **Instructor:** Fernán Alonso Villa Garzón
-**Date**  October 2025
+**Date:**  October 2025
 
 This repository contains a minimal C++11 toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
 Deliverable 1 focuses on **lexing**, **parsing to an AST**, **symbol table construction**, and **basic semantic checks**.
