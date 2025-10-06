@@ -9,7 +9,7 @@
 #include "ast_parser.hpp"
 #include "semantics.hpp"
 
-// ---- JSON emit helpers (C++11, no deps) ----------------------
+// ---- JSON emit helpers ----------------------
 static std::string json_escape(const std::string& s){
     std::string out; out.reserve(s.size()+8);
     for (size_t i=0;i<s.size();++i){
@@ -23,8 +23,8 @@ static std::string json_escape(const std::string& s){
             case '\r': out += "\\r";  break;
             case '\t': out += "\\t";  break;
             default:
-                if (c < 0x20) { // control char
-                    char buf[7]; // \u00XX
+                if (c < 0x20) { 
+                    char buf[7]; 
                     std::snprintf(buf, sizeof(buf), "\\u%04x", c);
                     out += buf;
                 } else {
@@ -77,7 +77,6 @@ static void writeSymbolsJSON(const SymbolTable& T, std::ostream& os){
     }
     os << "\n  }\n}\n";
 }
-// --------------------------------------------------------------
 
 static void printUsage(const char* argv0){
     std::cerr
@@ -94,7 +93,6 @@ int main(int argc, char** argv) {
         const char* jsonOut = NULL;
         const char* path = NULL;
 
-        // Simple CLI
         for (int i=1;i<argc;++i){
             const char* a = argv[i];
             if (std::strcmp(a, "--dump-ast")==0) { dump_ast = true; continue; }
@@ -123,12 +121,12 @@ int main(int argc, char** argv) {
         Parser parser(std::move(pt));
         std::unique_ptr<Program> ast = parser.parseProgram();
 
-        // 3) AST dump (optional)
+        // 3) AST dump 
         if (dump_ast) {
             dumpAST(ast.get(), std::cout);
         }
 
-        // 4) Semantics + symbol table (optional but recommended)
+        // 4) Semantics + symbol table 
         std::vector<Diagnostic> diags;
         SymbolTable table = analyzeSemantics(ast.get(), diags);
 
@@ -143,7 +141,6 @@ int main(int argc, char** argv) {
             writeSymbolsJSON(table, jf);
         }
 
-        // Diagnostics always to stderr so you can redirect stdout cleanly
         std::cerr << "=== Diagnostics ===\n";
         printDiagnostics(diags, std::cerr);
 
