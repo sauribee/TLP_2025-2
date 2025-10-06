@@ -1,8 +1,11 @@
 # Brick Game Engine — Deliverable 1 (Lexer + Parser + AST + Symbol Table)
 
 **Authors:** Juan Miguel Páez Tatis and Santiago Uribe Echavarría  
+
 **Course:** Programming Language Theory   
+
 **Instructor:** Fernán Alonso Villa Garzón
+
 **Date:**  October 2025
 
 This repository contains a minimal C++11 toolchain for the `.brik` language used to describe brick-style games for Tetris and Snake games.
