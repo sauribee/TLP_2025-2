@@ -9,7 +9,7 @@
 #include <regex>
 
 #ifdef _WIN32
-  #include <direct.h>   // _mkdir on Windows
+  #include <direct.h>     // _mkdir on Windows
 #else
   #include <sys/stat.h>
   #include <sys/types.h>
@@ -17,7 +17,7 @@
 
 static void ensureOutDir() {
 #ifdef _WIN32
-    _mkdir("out"); // ignore error if already exists
+    _mkdir("out");    // ignore error if already exists
 #else
     mkdir("out", 0755);
 #endif
@@ -113,7 +113,7 @@ private:
     int column;
     std::vector<Token> tokens;
     std::map<std::string, TokenType> keywords;
-    
+       
     void initializeKeywords() {
         keywords["game"] = TokenType::GAME;
         keywords["board"] = TokenType::BOARD;
@@ -319,6 +319,21 @@ private:
     }
     
 public:
+    std::string source_name;
+    
+    static std::string baseName(const std::string& path) {
+        size_t slash = path.find_last_of("/\\");
+        std::string name = (slash == std::string::npos) ? path : path.substr(slash + 1);
+        size_t dot = name.find_last_of('.');
+        if (dot != std::string::npos) name = name.substr(0, dot);
+        return name;
+    }
+    
+    Lexer(const std::string& inputText, const std::string& srcName)
+        : text(inputText), position(0), line(1), column(1), source_name(srcName) {
+        initializeKeywords();
+    }
+
     Lexer(const std::string& inputText) 
         : text(inputText), position(0), line(1), column(1) {
         initializeKeywords();
@@ -349,7 +364,10 @@ public:
         }
         
         ensureOutDir();
-        std::ofstream outFile("out/results.txt", std::ios::out | std::ios::trunc);
+        std::string base = source_name.empty() ? "tokens" : baseName(source_name);
+        std::string outPath = "out/" + base + ".tokens.txt";
+
+        std::ofstream outFile(outPath.c_str(), std::ios::out | std::ios::trunc);
         if (outFile.is_open()) {
             for (const auto& token : tokens) {
                 outFile << token.toString() << std::endl;
@@ -375,10 +393,11 @@ void checkBrikFile(const std::string& filename) {
     std::string content = buffer.str();
     file.close();
     
-    Lexer lexer(content);
+    Lexer lexer(content, filename);
     try {
         std::vector<Token> tokens = lexer.tokenize();
-        std::cout << "Syntax OK. Tokens written to out/results.txt" << std::endl;
+        std::cout << "Syntax OK. Tokens written to out/" 
+                  << Lexer::baseName(filename) << ".tokens.txt" << std::endl;
     } catch (const std::exception& e) {
         std::cout << "Syntax error: " << e.what() << std::endl;
     }

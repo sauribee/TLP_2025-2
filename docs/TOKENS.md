@@ -1,7 +1,6 @@
-﻿## Lexer Tokens
+﻿# Lexer Tokens
 
-```
-TOKENS = {
+```TOKENS = {
 
     # Literals
     'INTEGER': '\d+',

@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
         std::string source = buf.str();
 
         // ---- lex + parse ----
-        Lexer lex(source);
+        Lexer lex(source, input);   
         std::vector<Token> raw = lex.tokenize();
         std::vector<PToken> pt = make_ptokens(raw);
         Parser parser(std::move(pt));

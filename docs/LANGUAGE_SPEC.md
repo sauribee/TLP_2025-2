@@ -6,8 +6,7 @@ This document defines the **syntax**, **AST**, **symbol table**, and **semantic 
 
 A `.brik` file describes a brick‑style game (e.g., Tetris/Snake). General form:
 
-```
-<header> game "Title" {
+```<header> game "Title" {
   <blocks...>
 }
 ```
@@ -30,8 +29,7 @@ Recognized token kinds (as used in `PToken::Kind`):
 
 ### Appendix: tokens_list.txt
 
-```
-TOKENS = {
+```TOKENS = {
 
     # Literals
     'INTEGER': '\d+',
@@ -157,8 +155,7 @@ array_elements ::= value (COMMA value)*
 
 > Matches the shipped recursive‑descent parser. See `docs/GRAMMAR.ebnf` for a standalone file.
 
-```
-Program     := Header GAME STRING LBRACE Block* RBRACE END ;
+```Program     := Header GAME STRING LBRACE Block* RBRACE END ;
 Header      := (TETRIS | SNAKE | IDENTIFIER) VERSION ;
 
 Block       := BoardBlock
