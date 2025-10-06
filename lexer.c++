@@ -368,8 +368,9 @@ void checkBrikFile(const std::string& filename) {
     }
 }
 
-int main(int argc, char* argv[]) {
-    if (argc > 1) {
+#if 0
+int main() {
+    /if (argc > 1) {
         checkBrikFile(argv[1]);
     } else {
         checkBrikFile("tetris.brik");
@@ -377,3 +378,4 @@ int main(int argc, char* argv[]) {
     
     return 0;
 }
+#endif 

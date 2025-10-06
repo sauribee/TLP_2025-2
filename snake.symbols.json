@@ -1,0 +1,47 @@
+{
+  "scopes": {
+    "board": {
+      "cell_size": 20,
+      "colors": [],
+      "height": 20,
+      "width": 20,
+      "wrap": false
+    },
+    "controls": {
+      "down_mov": "down",
+      "left_mov": "left",
+      "pause": "p",
+      "restart": "r",
+      "right_mov": "right",
+      "up_mov": "up"
+    },
+    "game": {
+      "id": {"$ident":"snake"},
+      "title": "snake",
+      "version": 1
+    },
+    "level": {
+      "grid": [[1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1]]
+    },
+    "rules:rules_end_game": {
+      "on_out_of_bounds": "end",
+      "on_self_collision": "end",
+      "on_wall_collision": "end"
+    },
+    "rules:rules_spawning": {
+      "apple_respawn_ticks": 5,
+      "max_apples": 1
+    },
+    "rules:rules_speed_progression": {
+      "min_tick_ms": 60,
+      "speedup_after_apple": 5
+    },
+    "snake": {
+      "apple_points": 10,
+      "growth_per_apple": 3,
+      "initial_length": 5,
+      "spawn": "random",
+      "tick_ms": 120
+    }
+  }
+}
