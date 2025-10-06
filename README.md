@@ -19,15 +19,14 @@ TLP_2025-2/
 │  ├─ lexer.c++          # Lexer
 │  ├─ ast_parser.hpp     # AST types + (recursive-descent / LL) parser
 │  ├─ semantics.hpp      # Symbol table + basic semantic checks
-│  └─ ...                # Other headers/implementations
 ├─ games/                # Language examples
 │  ├─ tetris.brik
 │  └─ snake.brik
 ├─ docs/                 # Technical documentation
-│  ├─ LANGUAGE_SPEC.md   # Language spec (this deliverable)
-│  ├─ GRAMMAR.ebnf       # Approx. grammar in EBNF (this deliverable)
-│  └─ tokens_list.txt    # Token reference (optional)
-├─ out/                  # Outputs (AST, symbols, diagnostics, JSON)
+│  ├─ LANGUAGE_SPEC.md   # Language spec 
+│  ├─ GRAMMAR.ebnf       # Approx. grammar in EBNF 
+│  └─ tokens_list.txt    # Token reference 
+├─ out/                  # Outputs examples (AST, symbols, diagnostics, JSON)
 ├─ .gitignore
 └─ README.md
 ```
