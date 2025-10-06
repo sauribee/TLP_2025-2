@@ -9,7 +9,7 @@
 #include <regex>
 
 #ifdef _WIN32
-  #include <direct.h>     // _mkdir on Windows
+  #include <direct.h>     
 #else
   #include <sys/stat.h>
   #include <sys/types.h>
@@ -17,7 +17,7 @@
 
 static void ensureOutDir() {
 #ifdef _WIN32
-    _mkdir("out");    // ignore error if already exists
+    _mkdir("out");    
 #else
     mkdir("out", 0755);
 #endif

@@ -29,7 +29,8 @@ Recognized token kinds (as used in `PToken::Kind`):
 
 ### Appendix: tokens_list.txt
 
-```TOKENS = {
+```
+TOKENS = {
 
     # Literals
     'INTEGER': '\d+',
@@ -155,7 +156,8 @@ array_elements ::= value (COMMA value)*
 
 > Matches the shipped recursive‑descent parser. See `docs/GRAMMAR.ebnf` for a standalone file.
 
-```Program     := Header GAME STRING LBRACE Block* RBRACE END ;
+```
+Program     := Header GAME STRING LBRACE Block* RBRACE END ;
 Header      := (TETRIS | SNAKE | IDENTIFIER) VERSION ;
 
 Block       := BoardBlock
@@ -221,7 +223,8 @@ Arrays preserve nested structure for matrices (e.g., 4×4 rotations).
 
 Schema:
 
-```json
+```
+json
 {
   "scopes": {
     "<scope-name>": {

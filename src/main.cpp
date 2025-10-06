@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
             } else if (a.size() >= 6 && a.substr(a.size()-6) == ".brik") {
                 input = argv[i];
             } else if (a.size() >= 2 && a[0] != '-') {
-                input = argv[i]; // allow plain file without .brik suffix
+                input = argv[i]; 
             } else {
                 // unknown flag
                 std::cerr << "[Error] Unknown option: " << a << "\n";

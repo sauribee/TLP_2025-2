@@ -213,7 +213,7 @@ static void checkPieces(const SymbolTable& T, std::vector<Diagnostic>& D){
         }
     }
 
-    // Validate rotations 4x4 (each rotation must be a 4x4 matrix of ints)
+    // Validate rotations 4x4 
     for (std::set<std::string>::const_iterator itn = defined.begin();
          itn != defined.end(); ++itn) {
         const std::string& nm = *itn;

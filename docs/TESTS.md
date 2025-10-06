@@ -4,7 +4,8 @@ This file describes how to validate the lexer+parser+AST+semantics.
 
 ## 1) Build
 
-```powershell
+```
+powershell
 g++ -std=c++11 -O2 -Wall -Wextra -s -o brik_parser.exe main.cpp
 ```
 
@@ -12,8 +13,9 @@ g++ -std=c++11 -O2 -Wall -Wextra -s -o brik_parser.exe main.cpp
 
 ### Tetris
 
-```powershell
-.rik_parser.exe --dump-ast --dump-symbols --json . etris.symbols.json . etris.brik `
+```
+powershell
+.brik_parser.exe --dump-ast --dump-symbols --json . etris.symbols.json . etris.brik `
   > tetris.ast.txt 2> tetris.diag.txt
 ```
 
@@ -22,7 +24,7 @@ Expected: non-empty AST and Symbol Table, `tetris.symbols.json` created, and dia
 ### Snake
 
 ```powershell
-.rik_parser.exe --dump-ast --dump-symbols --json .\snake.symbols.json .\snake.brik `
+.brik_parser.exe --dump-ast --dump-symbols --json .\snake.symbols.json .\snake.brik `
   > snake.ast.txt 2> snake.diag.txt
 ```
 
@@ -45,8 +47,9 @@ tetris 1.0 game "BadBoard" {
 
 Run:
 
-```powershell
-.rik_parser.exe --dump-symbols .ad_board.brik 2> bad_board.diag.txt
+```
+powershell
+.brik_parser.exe --dump-symbols .bad_board.brik 2> bad_board.diag.txt
 ```
 
 Expected: semantic error about `board.width > 0`.
@@ -64,8 +67,9 @@ tetris 1.0 game "BadPieces" {
 
 Run:
 
-```powershell
-.rik_parser.exe --dump-symbols .ad_pieces.brik 2> bad_pieces.diag.txt
+```
+powershell
+.brik_parser.exe --dump-symbols .bad_pieces.brik 2> bad_pieces.diag.txt
 ```
 
 Expected: semantic error referencing undefined piece `X`.
@@ -85,8 +89,9 @@ tetris 1.0 game "BadRot" {
 
 Run:
 
-```powershell
-.rik_parser.exe --dump-symbols .ad_rot.brik 2> bad_rot.diag.txt
+```
+powershell
+.brik_parser.exe --dump-symbols .bad_rot.brik 2> bad_rot.diag.txt
 ```
 
 Expected: semantic error about 4x4 integer matrices.
@@ -98,7 +103,7 @@ PowerShell one-liner to run all `.brik` files in the folder:
 ```powershell
 Get-ChildItem -Filter *.brik | ForEach-Object { 
   $name = $_.BaseName
-  .rik_parser.exe --dump-ast --dump-symbols --json "$name.symbols.json" $_.FullName `
+  .brik_parser.exe --dump-ast --dump-symbols --json "$name.symbols.json" $_.FullName `
     > "$name.ast.txt" 2> "$name.diag.txt"
   Write-Host "$name => ExitCode=$LASTEXITCODE"
 }

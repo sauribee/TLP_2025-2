@@ -14,9 +14,6 @@
 #include <sstream>
 #include <iostream>
 
-// ==========================
-//  AST NODES
-// ==========================
 struct Node {
     int line = 0;
     int col  = 0;
