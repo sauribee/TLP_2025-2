@@ -1,0 +1,26 @@
+Program     = Header, "game", String, "{", { Block }, "}" ;
+Header      = ( "tetris" | "snake" | Identifier ), Version ;
+
+Block       = BoardBlock
+            | ControlsBlock
+            | PiecesBlock
+            | RulesBlock
+            | AssignBlock
+            | GameSpecificBlock ;
+
+BoardBlock      = "board", "{", { Prop }, "}" ;
+ControlsBlock   = "controls", "{", { Prop }, "}" ;
+
+PiecesBlock     = "pieces", "{", { PiecesExtra | PieceDef }, "}" ;
+PiecesExtra     = "available_pieces", "=", Value, ";" ;
+PieceDef        = Identifier, "{", { Prop }, "}" ;
+
+RulesBlock      = RulesName, "{", { Prop }, "}" ;
+RulesName       = Identifier starting with "rules_" ;
+
+GameSpecificBlock = ( "tetris" | "snake" | "level" | Identifier ), "{", { Prop }, "}" ;
+
+Prop        = Identifier, "=", Value, ";" ;
+
+Value       = String | Integer | Float | Boolean | Identifier | Array ;
+Array       = "[", [ Value, { ",", Value } ], "]" ;
