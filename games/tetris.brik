@@ -5,7 +5,7 @@ game "tetris" {
     board {
         height = 20;
         width = 10;
-        colors = [];
+        colors = [#8F8F8F, #000000];
     }
 
     controls {
@@ -20,7 +20,7 @@ game "tetris" {
     pieces {
         
         piece_I {
-            color = "...";
+            color = "#75E689";
             rotations = [
                 [
                     [0,0,0,0],
@@ -38,7 +38,7 @@ game "tetris" {
         }
     
         piece_O {
-            color = "...";
+            color = "#7599E6";
             rotations = [
                 [
                     [0,1,1,0],
@@ -50,7 +50,7 @@ game "tetris" {
         }
     
         piece_T {
-            color = "...";
+            color = "#EB3B3B";
             rotations = [
                 [
                     [0,1,0,0],
@@ -80,7 +80,7 @@ game "tetris" {
         }
     
         piece_J {
-            color = "...";
+            color = "#FFE824";
             rotations = [
                 [
                     [1,0,0,0],
@@ -110,7 +110,7 @@ game "tetris" {
         }
     
         piece_L {
-            color = "...";
+            color = "#BD24FF";
             rotations = [
                 [
                     [0,0,1,0],
@@ -140,7 +140,7 @@ game "tetris" {
         }
     
         piece_S {
-            color = "...";
+            color = "#1D00FF";
             rotations = [
                 [
                     [0,1,1,0],
@@ -158,7 +158,7 @@ game "tetris" {
         }
     
         piece_Z {
-            color = "...";
+            color = "#177A06";
             rotations = [
                 [
                     [1,1,0,0],
@@ -176,7 +176,7 @@ game "tetris" {
         }
     
         piece_bomb {
-            color = "...";
+            color = "#F08418";
             rotations = [
                 [
                     [1,0,0,0],
@@ -194,7 +194,7 @@ game "tetris" {
     rules_for_bomb {
         blast_radius = 1;
         time_to_detonate = 3;
-        color = "...";
+        color = "#F08418";
     }
 
     rules_random_pieces {
