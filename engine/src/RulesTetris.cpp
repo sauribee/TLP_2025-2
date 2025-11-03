@@ -439,124 +439,151 @@ public:
         }
     }
 
-    void render(GameContext& ctx) override {
-        auto& eng = ctx.eng;
-        SDL_Renderer* R = eng.renderer();
-        eng.clear(18,18,18,255);
+void render(GameContext& ctx) override {
+    auto& eng = ctx.eng;
+    SDL_Renderer* R = eng.renderer();
+    eng.clear(18,18,18,255);
 
-        // --- Centrar tablero con viewport ---
-        const int boardW = ctx.cols * ctx.cell_px;
-        const int boardH = ctx.rows * ctx.cell_px;
-        int winW=0, winH=0; SDL_GetRendererOutputSize(R, &winW, &winH);
-        int originX = std::max(0, (winW - boardW)/2);
-        int originY = std::max(0, (winH - boardH)/2);
-        SDL_Rect vp{ originX, originY, boardW, boardH };
-        SDL_RenderSetViewport(R, &vp);
+    // Dimensiones de ventana
+    int winW=0, winH=0; 
+    SDL_GetRendererOutputSize(R, &winW, &winH);
 
-        SDL_SetRenderDrawBlendMode(R, SDL_BLENDMODE_BLEND);
-        draw_board_frame(ctx, SDL_Color{255,200,40,255}, SDL_Color{55,55,55,255});
+    // --- Tablero centrado en viewport ---
+    const int boardW = ctx.cols * ctx.cell_px;
+    const int boardH = ctx.rows * ctx.cell_px;
+    int originX = std::max(0, (winW - boardW)/2);
+    int originY = std::max(0, (winH - boardH)/2);
+    SDL_Rect vp{ originX, originY, boardW, boardH };
+    SDL_RenderSetViewport(R, &vp);
 
-        // celdas fijas
-        for (int y=0; y<rows; ++y) for (int x=0; x<cols; ++x) {
-            int t = grid[idx(x,y)];
-            if (t!=0) eng.draw_brick(x*ctx.cell_px, y*ctx.cell_px, ctx.cell_px, color_of(t));
-        }
+    SDL_SetRenderDrawBlendMode(R, SDL_BLENDMODE_BLEND);
+    draw_board_frame(ctx, SDL_Color{255,200,40,255}, SDL_Color{55,55,55,255});
 
-        // Ghost
-        if (!game_over) {
-            Active ghost = cur; ghost.y = computeGhostY(cur);
-            const auto& rot = SHAPES[ghost.type-1][ghost.rot];
-            for (int dy=0; dy<4; ++dy) for (int dx=0; dx<4; ++dx) {
-                if (rot[dy][dx]=='#') {
-                    int X = ghost.x + dx, Y = ghost.y + dy;
-                    if (Y>=0 && X>=0 && X<cols) {
-                        SDL_Rect rc{ X*ctx.cell_px, Y*ctx.cell_px, ctx.cell_px, ctx.cell_px };
-                        SDL_SetRenderDrawColor(R, 200,200,200, 70);
-                        SDL_RenderFillRect(R, &rc);
-                    }
-                }
-            }
-        }
-
-        // Activa
-        if (!game_over) {
-            const auto& rot = SHAPES[cur.type-1][cur.rot];
-            for (int dy=0; dy<4; ++dy) for (int dx=0; dx<4; ++dx) {
-                if (rot[dy][dx]=='#') {
-                    int X = cur.x + dx, Y = cur.y + dy;
-                    if (Y>=0 && X>=0 && X<cols)
-                        eng.draw_brick(X*ctx.cell_px, Y*ctx.cell_px, ctx.cell_px, color_of(cur.type));
-                }
-            }
-        }
-
-        // Partículas
-        for (auto& p : particles_) {
-            int alpha = (int)std::round(200.f * std::max(0.f, p.life));
-            SDL_SetRenderDrawColor(R, 255,220,60, alpha);
-            SDL_Rect rc{ int(p.x)-2, int(p.y)-2, 4, 4 };
-            SDL_RenderFillRect(R, &rc);
-        }
-
-       // --------- HUD mínimo (Score + hints) + mini UI (Hold/Next) ----------
-        {
-            const int barH = 24; // banda superior muy delgada
-            SDL_Rect bar{0,0,boardW,barH};
-            SDL_SetRenderDrawColor(R, 0,0,0,150);
-            SDL_RenderFillRect(R, &bar);
-        
-            // Score a la izquierda
-            eng.draw_text(6, 4, "Score: " + std::to_string(ctx.score), SDL_Color{255,255,255,255});
-            // Hints cortos, centrados (no se desbordan)
-            eng.draw_text(boardW/2 - 90, 4, "H:Help  P:Pause  ESC", SDL_Color{220,220,220,255});
-        
-            // Mini iconos: Hold y Next x3 justo DEBAJO de la banda
-            const int mini = 8;
-            const int pad  = 6;
-            const int topY = barH + 4;
-        
-            // Hold (esquina izq)
-            draw_mini(ctx, holdType_, pad, topY, mini);
-        
-            // Next vertical (esquina der)
-            int nx = boardW - pad - 4*mini;
-            int ny = topY;
-            draw_mini(ctx, next_[0], nx, ny, mini);            ny += 4*mini + 4;
-            draw_mini(ctx, next_[1], nx, ny, mini);            ny += 4*mini + 4;
-            draw_mini(ctx, next_[2], nx, ny, mini);
-        }
-
-
-        // ---------- Overlays (Help / Pausa / Game Over) -------------------
-        const int W = boardW, H = boardH;
-        if (showHelp_) {
-            SDL_SetRenderDrawColor(R, 0,0,0,190);
-            SDL_Rect full{0,0,W,H}; SDL_RenderFillRect(R, &full);
-
-            // Panel de ayuda centrado con toda la info
-            int y = H/2 - 70;
-            eng.draw_text( W/2 - 110, y,       "TETRIS — Quick Help", SDL_Color{255,255,255,255});  y += 20;
-            eng.draw_text( W/2 - 140, y,       "Score: " + std::to_string(ctx.score) +
-                                               "   Lvl: " + std::to_string(level_) +
-                                               "   Lines: " + std::to_string(linesTotal_), SDL_Color{230,230,230,255}); y += 20;
-            eng.draw_text( W/2 - 140, y,       "Move:  ← / →     Soft:  ↓ or S     Hard:  Space", SDL_Color{220,220,220,255}); y += 18;
-            eng.draw_text( W/2 - 140, y,       "Rotate:  ↑ or X (CW) ,  Z (CCW)     Hold:  A", SDL_Color{220,220,220,255}); y += 18;
-            eng.draw_text( W/2 - 140, y,       "Pause:  P     Reset:  R     Close:  ESC", SDL_Color{220,220,220,255});
-        }
-        if (paused_ && !game_over) {
-            SDL_SetRenderDrawColor(R, 0,0,0,140);
-            SDL_Rect full{0,0,W,H}; SDL_RenderFillRect(R, &full);
-            eng.draw_text(W/2 - 28, H/2 - 8, "PAUSED", SDL_Color{255,255,255,255});
-        }
-        if (game_over) {
-            SDL_SetRenderDrawColor(R, 0,0,0,160);
-            SDL_Rect full{0,0,W,H}; SDL_RenderFillRect(R, &full);
-            eng.draw_text(W/2 - 70, H/2 - 10, "GAME OVER — R to restart", SDL_Color{255,120,120,255});
-        }
-
-        SDL_RenderSetViewport(R, nullptr);
-        eng.present();
+    // celdas fijas
+    for (int y=0; y<rows; ++y) for (int x=0; x<cols; ++x) {
+        int t = grid[idx(x,y)];
+        if (t!=0) eng.draw_brick(x*ctx.cell_px, y*ctx.cell_px, ctx.cell_px, color_of(t));
     }
+
+    // Ghost
+    if (!game_over) {
+        Active ghost = cur; 
+        ghost.y = computeGhostY(cur);
+        const auto& rot = SHAPES[ghost.type-1][ghost.rot];
+        for (int dy=0; dy<4; ++dy) for (int dx=0; dx<4; ++dx) {
+            if (rot[dy][dx]=='#') {
+                int X = ghost.x + dx, Y = ghost.y + dy;
+                if (Y>=0 && X>=0 && X<cols) {
+                    SDL_Rect rc{ X*ctx.cell_px, Y*ctx.cell_px, ctx.cell_px, ctx.cell_px };
+                    SDL_SetRenderDrawColor(R, 200,200,200, 70);
+                    SDL_RenderFillRect(R, &rc);
+                }
+            }
+        }
+    }
+
+    // Activa
+    if (!game_over) {
+        const auto& rot = SHAPES[cur.type-1][cur.rot];
+        for (int dy=0; dy<4; ++dy) for (int dx=0; dx<4; ++dx) {
+            if (rot[dy][dx]=='#') {
+                int X = cur.x + dx, Y = cur.y + dy;
+                if (Y>=0 && X>=0 && X<cols)
+                    eng.draw_brick(X*ctx.cell_px, Y*ctx.cell_px, ctx.cell_px, color_of(cur.type));
+            }
+        }
+    }
+
+    // Partículas (coordenadas de tablero)
+    for (auto& p : particles_) {
+        int alpha = (int)std::round(200.f * std::max(0.f, p.life));
+        SDL_SetRenderDrawColor(R, 255,220,60, alpha);
+        SDL_Rect rc{ int(p.x)-2, int(p.y)-2, 4, 4 };
+        SDL_RenderFillRect(R, &rc);
+    }
+
+    // === Salimos del viewport: todo lo que sigue es a nivel de ventana ===
+    SDL_RenderSetViewport(R, nullptr);
+
+    // --------- HUD superior (ventana completa) ----------
+    {
+        const int barH = 24; // banda superior delgada
+        SDL_Rect bar{0,0,winW,barH};
+        SDL_SetRenderDrawColor(R, 0,0,0,150);
+        SDL_RenderFillRect(R, &bar);
+
+        // Score (izquierda)
+        eng.draw_text(8, 4, "Score: " + std::to_string(ctx.score), SDL_Color{255,255,255,255});
+        // Hints (centrados en ventana)
+        eng.draw_text(winW/2 - 90, 4, "H:Help  P:Pause  ESC", SDL_Color{220,220,220,255});
+
+        // Mini UI (Hold/Next) debajo de la barra, en coords de ventana
+        const int mini = 8;
+        const int pad  = 6;
+        const int topY = barH + 4;
+
+        // Hold (esquina izq)
+        draw_mini(ctx, holdType_, pad, topY, mini);
+
+        // Next vertical (esquina der)
+        int nx = winW - pad - 4*mini;
+        int ny = topY;
+        draw_mini(ctx, next_[0], nx, ny, mini);            ny += 4*mini + 4;
+        draw_mini(ctx, next_[1], nx, ny, mini);            ny += 4*mini + 4;
+        draw_mini(ctx, next_[2], nx, ny, mini);
+    }
+
+    // ---------- Overlays (Help / Pausa / Game Over) en ventana ----------
+    if (showHelp_) {
+        // Fondo translúcido full-window
+        SDL_SetRenderDrawColor(R, 0,0,0,190);
+        SDL_Rect shade{0,0,winW,winH};
+        SDL_RenderFillRect(R, &shade);
+
+        // Texto pequeño (80%) con escala del renderer
+        auto draw_small = [&](int x, int y, const std::string& s, SDL_Color c){
+            const float sX = 0.80f, sY = 0.80f;
+            SDL_RenderSetScale(R, sX, sY);
+            eng.draw_text(int(x / sX), int(y / sY), s, c);
+            SDL_RenderSetScale(R, 1.f, 1.f);
+        };
+
+        // Panel centrado
+        const int panelW = std::min(520, winW - 40);
+        const int panelH = 150;
+        const int px = (winW - panelW)/2;
+        const int py = (winH - panelH)/2;
+        SDL_SetRenderDrawColor(R, 20,20,20,230);
+        SDL_Rect panel{px, py, panelW, panelH};
+        SDL_RenderFillRect(R, &panel);
+        SDL_SetRenderDrawColor(R, 255,200,40,220);
+        SDL_RenderDrawRect(R, &panel);
+
+        int y = py + 12;
+        draw_small(px + 16, y, "TETRIS — Quick Help", SDL_Color{255,255,255,255}); y += 20;
+        draw_small(px + 16, y, "Score: " + std::to_string(ctx.score) +
+                               "   Lvl: " + std::to_string(level_) +
+                               "   Lines: " + std::to_string(linesTotal_), SDL_Color{230,230,230,255}); y += 20;
+        draw_small(px + 16, y, "Move:  ← / →     Soft:  ↓ or S     Hard:  Space", SDL_Color{220,220,220,255}); y += 18;
+        draw_small(px + 16, y, "Rotate:  ↑ or X (CW) ,  Z (CCW)     Hold:  A",   SDL_Color{220,220,220,255}); y += 18;
+        draw_small(px + 16, y, "Pause:  P     Reset:  R     Close:  ESC",         SDL_Color{220,220,220,255});
+    }
+
+    if (paused_ && !game_over) {
+        SDL_SetRenderDrawColor(R, 0,0,0,140);
+        SDL_Rect full{0,0,winW,winH}; SDL_RenderFillRect(R, &full);
+        eng.draw_text(winW/2 - 28, winH/2 - 8, "PAUSED", SDL_Color{255,255,255,255});
+    }
+
+    if (game_over) {
+        SDL_SetRenderDrawColor(R, 0,0,0,160);
+        SDL_Rect full{0,0,winW,winH}; SDL_RenderFillRect(R, &full);
+        eng.draw_text(winW/2 - 90, winH/2 - 10, "GAME OVER — R to restart", SDL_Color{255,120,120,255});
+    }
+
+    eng.present();
+}
+
 };
 
 std::unique_ptr<IGame> make_tetris() { return std::make_unique<GameTetris>(); }
