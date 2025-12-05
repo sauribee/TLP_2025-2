@@ -16,7 +16,6 @@ class ParseError(Exception):
             self.message, self.token.line, self.token.col, self.token.value
         )
 
-
 class Parser(object):
     def __init__(self, tokens):
         self.tokens = tokens

@@ -3,15 +3,15 @@ snake version 1.0
 game "snake" {
 
     board {
-        width = 20;
-        height = 20;
+        width = 30;
+        height = 30;
         cell_size = 20;
         wrap = false;
 
         colors {
             background = #FFFFFF;
             walls      = #485CF7;
-            snake_body = #5C4D3E;
+            snake_body = #2C8D3E;
             apple      = #F74848;
             grid       = #CCCCCC;
         }
@@ -28,7 +28,7 @@ game "snake" {
 
     snake {
         tick_ms = 120;
-        initial_length = 5;
+        initial_length = 1;
         growth_per_apple = 3;
         spawn = "random";
     }

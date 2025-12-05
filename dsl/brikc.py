@@ -3,10 +3,9 @@
 from __future__ import print_function
 
 import sys
-
 import lexer
-import brik_parser   # nuestro parser.py
-import symbols  # nuestro symbols.py
+import brik_parser
+import symbols
 
 
 def main(argv):
