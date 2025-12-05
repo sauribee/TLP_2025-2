@@ -3,9 +3,9 @@ snake version 1.0
 game "snake" {
 
     board {
-        width = 30;
-        height = 30;
-        cell_size = 20;
+        width = 20;
+        height = 20;
+        cell_size = 24;
         wrap = false;
 
         colors {
@@ -61,7 +61,7 @@ game "snake" {
 
     rules_spawning {
         apple_respawn_ticks = 5;
-        max_apples = 1;
+        max_apples = 10;
     }
 
     rules_scoring {

@@ -313,7 +313,7 @@ class SnakeGame(BaseGame):
                 tail = self.snake.pop()
                 self.snake_set.remove(tail)
                 
-
+                
     def draw(self, engine):
         """
         Dibuja paredes, snake y manzana usando el API de dibujo del engine.
