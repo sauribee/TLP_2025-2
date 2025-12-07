@@ -14,8 +14,21 @@ game "snake" {
             snake_body = #2C8D3E;
             apple      = #F74848;
             grid       = #CCCCCC;
+            portal     = #FFD700;
         }
     }
+
+    portals {
+    random = true;      // si true => ignora p1_*, p2_* y crea aleatorios
+    num_pairs = 2;      // cuántos pares de portales quieres (por defecto 2)
+
+    p1_from = [3, 10];  // se usan solo si random = false
+    p1_to   = [15, 10];
+
+    p2_from = [4, 5];
+    p2_to   = [4, 15];
+    }
+
 
     controls {
         right_mov = "right";

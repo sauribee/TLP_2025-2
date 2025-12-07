@@ -8,9 +8,13 @@ game "tetris" {
         colors {
             background = #8F8F8F;
             grid       = #000000;
+            ghost      = #BBBBBB;   // <<< NUEVO: color de la sombra
         }
     }
 
+    ui {
+    next_queue_length = 3;
+    }
 
     controls {
         right_mov = "right";
@@ -20,6 +24,7 @@ game "tetris" {
         pause = "p";
         restart = "r";
     }
+
 
     pieces {
         

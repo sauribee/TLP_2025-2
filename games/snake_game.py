@@ -30,6 +30,8 @@ class SnakeGame(BaseGame):
         self.color_snake = sym_str(symbols, 'board.colors.snake_body', '#00FF00')
         self.color_walls = sym_str(symbols, 'board.colors.walls', '#888888')
         self.color_apple = sym_str(symbols, 'board.colors.apple', '#FF0000')
+        self.color_portal = sym_str(symbols, "board.colors.portal", "#FFD700")
+
 
         # ------------------------------------------------------------------
         # Controles – vienen como strings tipo "right", "left", "p", "r"
@@ -107,6 +109,84 @@ class SnakeGame(BaseGame):
         self.snake_set = set()
         self.food = None
         self._init_snake_and_food()
+        
+        # ------------------ Portales ------------------
+        self.portals = {}
+        self.portal_cells = set()
+
+        # Color del portal (ya deberías tener algo así):
+        self.color_portal = sym_str(symbols, "board.colors.portal", "#FFD700")
+
+        # ¿Portales aleatorios o fijos del .brik?
+        self.portal_random = sym_bool(symbols, "portals.random", False)
+        self.portal_num_pairs = sym_int(symbols, "portals.num_pairs", 2)
+
+        if self.portal_random:
+            # Creamos portales aleatorios
+            self._spawn_random_portals()
+        else:
+            # Usamos los fijos del .brik (tu estructura original)
+            p1_from = sym_get(symbols, "portals.p1_from", None)
+            p1_to   = sym_get(symbols, "portals.p1_to",   None)
+            if p1_from and p1_to:
+                a = tuple(p1_from)
+                b = tuple(p1_to)
+                self.portals[a] = b
+                self.portals[b] = a
+                self.portal_cells.add(a)
+                self.portal_cells.add(b)
+
+            p2_from = sym_get(symbols, "portals.p2_from", None)
+            p2_to   = sym_get(symbols, "portals.p2_to",   None)
+            if p2_from and p2_to:
+                a = tuple(p2_from)
+                b = tuple(p2_to)
+                self.portals[a] = b
+                self.portals[b] = a
+                self.portal_cells.add(a)
+                self.portal_cells.add(b)
+
+    def _spawn_random_portals(self):
+        """
+        Crea pares de portales aleatorios, respetando walls.
+        Rellena self.portals y self.portal_cells.
+        """
+
+        self.portals.clear()
+        self.portal_cells.clear()
+
+        # Construimos lista de celdas válidas (no paredes)
+        valid = []
+        for y in range(self.board_h):
+            for x in range(self.board_w):
+                pos = (x, y)
+                if pos in self.walls:
+                    continue
+                valid.append(pos)
+
+        if not valid:
+            return
+
+        # Número de pares que realmente podemos crear
+        max_pairs = len(valid) // 2
+        num_pairs = min(self.portal_num_pairs, max_pairs)
+        if num_pairs <= 0:
+            return
+
+        # Elegimos 2 * num_pairs celdas distintas
+        chosen = random.sample(valid, 2 * num_pairs)
+
+        for i in range(num_pairs):
+            a = chosen[2 * i]
+            b = chosen[2 * i + 1]
+
+            # mapa bidireccional
+            self.portals[a] = b
+            self.portals[b] = a
+
+            self.portal_cells.add(a)
+            self.portal_cells.add(b)
+
 
     # ======================================================================
     #  Construcción de paredes a partir de level.grid
@@ -208,6 +288,10 @@ class SnakeGame(BaseGame):
         self.food = None
         self._init_snake_and_food()
 
+        if self.portal_random:
+            self._spawn_random_portals()
+
+
     def on_key(self, keysym):
         k = keysym.lower()
 
@@ -269,6 +353,13 @@ class SnakeGame(BaseGame):
         out_of_bounds = not (0 <= nx < self.board_w and 0 <= ny < self.board_h)
         new_head = (nx, ny)
 
+        new_head = (nx, ny)
+
+        # Portal
+        if new_head in self.portals:
+            new_head = self.portals[new_head]
+
+
         # Fuera de los límites (sin wrap)
         if out_of_bounds:
             if self.rule_out_of_bounds == 'end':
@@ -322,6 +413,10 @@ class SnakeGame(BaseGame):
         # Paredes
         for (x, y) in self.walls:
             engine.draw_brick(x, y, color=self.color_walls)
+
+        #portal
+        for (x, y) in self.portal_cells:
+            engine.draw_brick(x, y, color=self.color_portal)
 
         # Snake
         for (x, y) in self.snake:

@@ -81,6 +81,21 @@ class TetrisGame(BaseGame):
         # Dimensiones de tablero
         self.board_w = sym_int(symbols, "board.width", engine.grid_width)
         self.board_h = sym_int(symbols, "board.height", engine.grid_height)
+        # Color de la sombra (global para todas las piezas)
+        self.ghost_color = sym_str(
+            symbols,
+            "board.colors.ghost",
+            "#666666"  # valor por defecto si no está en el .brik
+        )
+        # ---------------- Cola de próximas piezas ----------------
+        self.next_queue_length = sym_int(symbols, "ui.next_queue_length", 3)
+        if self.next_queue_length < 1:
+            self.next_queue_length = 1
+
+        # se llenará en _init_pieces()
+        self.next_queue = []
+
+
 
         # Controles
         self.key_left    = sym_str(symbols, "controls.left_mov",   "Left").lower()
@@ -109,7 +124,7 @@ class TetrisGame(BaseGame):
         # Estado del juego
         self.board = self._make_empty_board()
         self.current_piece      = None
-        self.next_piece_kind    = None
+        # self.next_piece_kind    = None
         self.score              = 0
         self.level              = 1
         self.total_lines_cleared = 0
@@ -141,8 +156,8 @@ class TetrisGame(BaseGame):
         # aquí usamos base_tick_ms, que ya fue seteado en __init__
         self.tick_ms = self.base_tick_ms
 
-        self.next_piece_kind = self._random_piece_kind()
-        self._spawn_new_piece()
+        # self.next_piece_kind = self._random_piece_kind()
+        # self._spawn_new_piece()
 
     
     def _load_pieces_from_symbols(self, symbols):
@@ -209,40 +224,123 @@ class TetrisGame(BaseGame):
 
     def _make_empty_board(self):
         return [[None for _ in range(self.board_w)] for _ in range(self.board_h)]
+    
+    def _refill_next_queue(self, full=False):
+        """
+        Rellena self.next_queue con piezas aleatorias hasta tener
+        self.next_queue_length elementos.
+
+        Si full=True, vacía primero la cola.
+        """
+        if full:
+            self.next_queue = []
+
+        while len(self.next_queue) < self.next_queue_length:
+            self.next_queue.append(self._random_piece_kind())
 
     def _init_pieces(self):
         self.board = self._make_empty_board()
-        self.score = 0
-        self.level = 1
+        self.current_piece       = None
+        self.score               = 0
+        self.level               = 1
         self.total_lines_cleared = 0
-        self.game_over = False
-        self.paused = False
-        self.accum_ms = 0
+        self.game_over           = False
+        self.paused              = False
+        self.accum_ms            = 0
+
         self.tick_ms = self.base_tick_ms
 
-        self.next_piece_kind = self._random_piece_kind()
+        # Inicializar cola de próximas piezas
+        self._refill_next_queue(full=True)
+
+        # Spawnear la primera pieza usando la cola
         self._spawn_new_piece()
+
+        # self.next_piece_kind = self._random_piece_kind()
+        # self._spawn_new_piece()
 
     def _random_piece_kind(self):
         return self._rng.choice(self.piece_kinds)
+    
+    def _draw_preview_piece(self, engine, kind, top_y_px):
+        """
+        Dibuja una preview de la pieza 'kind' en el panel de info,
+        centrada horizontalmente y comenzando en la coordenada Y dada
+        (en píxeles dentro del panel de info).
+        """
+        canvas = engine.info_canvas
+        if canvas is None:
+            return
+
+        # Usamos la rotación 0 para la preview
+        shape = self.piece_shapes[kind][0]
+        color = self.piece_colors.get(kind, "#ffffff")
+
+        # Tamaño de celda para la preview (más pequeño que el de juego)
+        cell = max(4, engine.cell_size // 2)
+
+        min_x = min(px for (px, py) in shape)
+        max_x = max(px for (px, py) in shape)
+        min_y = min(py for (px, py) in shape)
+        max_y = max(py for (px, py) in shape)
+
+        width_cells  = max_x - min_x + 1
+        height_cells = max_y - min_y + 1
+
+        total_w_px = width_cells * cell
+        total_h_px = height_cells * cell
+
+        center_x = engine.info_width_px // 2
+        start_x = center_x - total_w_px // 2
+        start_y = top_y_px
+
+        for (gx, gy) in shape:
+            x0 = start_x + (gx - min_x) * cell
+            y0 = start_y + (gy - min_y) * cell
+            x1 = x0 + cell
+            y1 = y0 + cell
+            canvas.create_rectangle(
+                x0, y0, x1, y1,
+                fill=color,
+                outline="gray30"
+            )
+
 
     def _spawn_new_piece(self):
-        kind = self.next_piece_kind or self._random_piece_kind()
+        # Si la cola está vacía (por alguna razón), la rellenamos
+        if not self.next_queue:
+            self._refill_next_queue(full=True)
+
+        # Tomamos la primera pieza de la cola
+        kind = self.next_queue.pop(0)
         rotation = 0
-        # Centro horizontal
+
         shape = self.piece_shapes[kind][rotation]
         min_x = min(p[0] for p in shape)
         max_x = max(p[0] for p in shape)
         width = max_x - min_x + 1
-        x = (self.board_w - width) // 2 - min_x
+
+        # Ancho interior si tienes paredes, si no, board_w
+        inner_w = self.board_w
+        # si usas paredes en x=0 y x=board_w-1:
+        # inner_w = self.board_w - 2
+
+        # centramos dentro del tablero (ajusta si tienes paredes)
+        x = (inner_w - width) // 2 - min_x
+        # si usas paredes, y = 1; si no, y = 0
         y = 0
 
         piece = Piece(kind, x, y, rotation)
+
         if not self._can_place(piece, x, y, rotation):
             self.game_over = True
-        else:
-            self.current_piece = piece
-            self.next_piece_kind = self._random_piece_kind()
+            return
+
+        self.current_piece = piece
+
+        # Aseguramos que la cola siga llena para las próximas
+        self._refill_next_queue(full=False)
+
 
     # ------------------------------------------------------------------
     # Utilidades sobre piezas/tablero
@@ -410,6 +508,34 @@ class TetrisGame(BaseGame):
             else:
                 self._move_piece(0, 1)
 
+    def _compute_ghost_cells(self):
+        """
+        Calcula la posición de la 'ghost piece' (sombra) para la pieza actual.
+        Devuelve una lista de (x, y) en tablero, o None si no aplica.
+        No modifica self.current_piece.
+        """
+        if self.current_piece is None:
+            return None
+        if self.game_over:
+            return None
+
+        piece = self.current_piece
+
+        # Usamos x, y, rotation actuales, pero sin modificar la pieza real.
+        x = piece.x
+        y = piece.y
+        rotation = piece.rotation
+
+        # Bajamos la pieza virtualmente hasta que ya no pueda bajar más.
+        while self._can_place(piece, x, y + 1, rotation):
+            y += 1
+
+        # Si la sombra está exactamente en la misma fila que la pieza real,
+        # igual la dibujamos (la pieza real luego la tapa), no hace daño.
+        # Calculamos las celdas finales en (x, y) encontrado.
+        return self._piece_cells(piece, x=x, y=y, rotation=rotation)
+
+
     def draw(self, engine):
         # Tablero fijo
         for y in range(self.board_h):
@@ -417,6 +543,15 @@ class TetrisGame(BaseGame):
                 color = self.board[y][x]
                 if color is not None:
                     engine.draw_brick(x, y, color=color)
+        
+                # ---------- GHOST PIECE (sombra) ----------
+        ghost_cells = self._compute_ghost_cells()
+        if ghost_cells is not None:
+            for (gx, gy) in ghost_cells:
+                # Solo dibujamos en celdas vacías para no tapar bloques fijos
+                if 0 <= gx < self.board_w and 0 <= gy < self.board_h:
+                    if self.board[gy][gx] is None:
+                        engine.draw_brick(gx, gy, color=self.ghost_color)
 
         # Pieza actual
         if self.current_piece is not None:
@@ -425,10 +560,11 @@ class TetrisGame(BaseGame):
                 if 0 <= cx < self.board_w and 0 <= cy < self.board_h:
                     engine.draw_brick(cx, cy, color=color)
 
-        # Panel de información
+        # ---------- Panel de info ----------
         if engine.info_canvas is not None:
             center_x = engine.info_width_px // 2
 
+            # Título
             engine.draw_text(
                 center_x, 30,
                 "Tetris",
@@ -437,48 +573,44 @@ class TetrisGame(BaseGame):
                 font=engine.font_title
             )
 
-            engine.draw_hline(60, where="info")
+            engine.draw_hline(70, where="info")
 
+            # Score / nivel / líneas, etc. (lo que ya tenías)
             engine.draw_text(
-                20, 80,
+                20, 90,
                 "Score:",
                 where="info",
                 anchor="nw",
                 font=engine.font_label
             )
             engine.draw_text(
-                20, 100,
+                20, 110,
                 str(self.score),
                 where="info",
                 anchor="nw",
                 font=engine.font_value
             )
 
+            # ... más stats si quieres ...
+
+            engine.draw_hline(180, where="info")
+
+            # Cola de próximas piezas
             engine.draw_text(
-                20, 130,
-                "Nivel: %d" % self.level,
+                20, 190,
+                "Next pieces:",
                 where="info",
                 anchor="nw",
                 font=engine.font_label
             )
 
-            engine.draw_text(
-                20, 155,
-                "Líneas: %d" % self.total_lines_cleared,
-                where="info",
-                anchor="nw",
-                font=engine.font_label
-            )
+            # dibujamos hasta next_queue_length previews
+            y0 = 215
+            spacing = 60  # separación vertical entre previews
+            for i, kind in enumerate(self.next_queue[:self.next_queue_length]):
+                top_y = y0 + i * spacing
+                self._draw_preview_piece(engine, kind, top_y_px=top_y)
 
-            engine.draw_text(
-                20, 185,
-                "Tick: %d ms" % self.tick_ms,
-                where="info",
-                anchor="nw",
-                font=engine.font_hint
-            )
-
-            engine.draw_hline(220, where="info")
 
             if self.game_over:
                 engine.draw_text(
