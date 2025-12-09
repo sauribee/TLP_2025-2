@@ -90,10 +90,6 @@ def main():
     # 2) Creamos el motor a partir de esos símbolos
     engine = make_engine_from_symbols(symbols)
 
-    # (opcional) para verificar:
-    print("Game area:", engine.game_width_px, "x", engine.height_px,
-          " cell_size:", engine.cell_size)
-
     # 3) Creamos el juego correspondiente
     game = GameClass(engine, symbols)
 
