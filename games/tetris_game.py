@@ -65,14 +65,12 @@ DEFAULT_COLORS = {
     "L": "#ff8800",
 }
 
-
 class Piece(object):
     def __init__(self, kind, x, y, rotation):
         self.kind = kind
         self.x = x
         self.y = y
         self.rotation = rotation  # 0..3
-
 
 class TetrisGame(BaseGame):
     def __init__(self, engine, symbols):
@@ -82,11 +80,16 @@ class TetrisGame(BaseGame):
         self.board_w = sym_int(symbols, "board.width", engine.grid_width)
         self.board_h = sym_int(symbols, "board.height", engine.grid_height)
         # Color de la sombra (global para todas las piezas)
-        self.ghost_color = sym_str(
-            symbols,
-            "board.colors.ghost",
-            "#666666"  # valor por defecto si no está en el .brik
-        )
+        self.ghost_color = sym_str(symbols, "board.colors.ghost","#666666")
+        
+        # Colores del tablero
+        self.color_bg   = sym_str(symbols, "board.colors.background", "#000000")
+        self.color_grid = sym_str(symbols, "board.colors.grid",       "#000000")
+
+        # Color de las paredes (borde). Si no hay walls en el .brik, usamos grid.
+        # self.wall_color = sym_str(symbols, "board.colors.walls", self.color_grid)
+        self.wall_color = sym_str(symbols, "board.colors.walls", "#self.color_grid")
+
         # ---------------- Cola de próximas piezas ----------------
         self.next_queue_length = sym_int(symbols, "ui.next_queue_length", 3)
         if self.next_queue_length < 1:
@@ -94,8 +97,6 @@ class TetrisGame(BaseGame):
 
         # se llenará en _init_pieces()
         self.next_queue = []
-
-
 
         # Controles
         self.key_left    = sym_str(symbols, "controls.left_mov",   "Left").lower()
@@ -141,7 +142,19 @@ class TetrisGame(BaseGame):
     # ------------------------------------------------------------------
 
     def _make_empty_board(self):
-        return [[None for _ in range(self.board_w)] for _ in range(self.board_h)]
+        # Empezamos todo vacío
+        board = [[None for _ in range(self.board_w)] for _ in range(self.board_h)]
+
+        # Paredes verticales: primera (x=0) y última columna (x=board_w-1)
+        for y in range(self.board_h):
+            board[y][0] = self.wall_color
+            board[y][self.board_w - 1] = self.wall_color
+
+        # Paredes horizontales: primera fila (y=0) y última fila (y=board_h-1)
+        for x in range(self.board_w):
+            board[0][x] = self.wall_color
+            board[self.board_h - 1][x] = self.wall_color
+        return board
 
     def _init_pieces(self):
         self.board = self._make_empty_board()
@@ -153,12 +166,11 @@ class TetrisGame(BaseGame):
         self.paused              = False
         self.accum_ms            = 0
 
-        # aquí usamos base_tick_ms, que ya fue seteado en __init__
         self.tick_ms = self.base_tick_ms
 
-        # self.next_piece_kind = self._random_piece_kind()
-        # self._spawn_new_piece()
-
+        # rellenar cola y spawnear
+        self._refill_next_queue(full=True)
+        self._spawn_new_piece()
     
     def _load_pieces_from_symbols(self, symbols):
         """
@@ -221,9 +233,6 @@ class TetrisGame(BaseGame):
     # ------------------------------------------------------------------
     # Helpers de inicialización
     # ------------------------------------------------------------------
-
-    def _make_empty_board(self):
-        return [[None for _ in range(self.board_w)] for _ in range(self.board_h)]
     
     def _refill_next_queue(self, full=False):
         """
@@ -239,7 +248,9 @@ class TetrisGame(BaseGame):
             self.next_queue.append(self._random_piece_kind())
 
     def _init_pieces(self):
+        # Tablero nuevo con paredes (según tu _make_empty_board actual)
         self.board = self._make_empty_board()
+
         self.current_piece       = None
         self.score               = 0
         self.level               = 1
@@ -248,13 +259,13 @@ class TetrisGame(BaseGame):
         self.paused              = False
         self.accum_ms            = 0
 
+        # Velocidad base desde el .brik
         self.tick_ms = self.base_tick_ms
 
-        # Inicializar cola de próximas piezas
+        # Inicializar la cola de próximas piezas y spawnear la primera
         self._refill_next_queue(full=True)
-
-        # Spawnear la primera pieza usando la cola
         self._spawn_new_piece()
+
 
         # self.next_piece_kind = self._random_piece_kind()
         # self._spawn_new_piece()
@@ -304,10 +315,9 @@ class TetrisGame(BaseGame):
                 fill=color,
                 outline="gray30"
             )
-
-
+            
     def _spawn_new_piece(self):
-        # Si la cola está vacía (por alguna razón), la rellenamos
+        # Si la cola está vacía por alguna razón, la rellenamos
         if not self.next_queue:
             self._refill_next_queue(full=True)
 
@@ -316,31 +326,30 @@ class TetrisGame(BaseGame):
         rotation = 0
 
         shape = self.piece_shapes[kind][rotation]
-        min_x = min(p[0] for p in shape)
-        max_x = max(p[0] for p in shape)
+        min_x = min(px for (px, py) in shape)
+        max_x = max(px for (px, py) in shape)
         width = max_x - min_x + 1
 
-        # Ancho interior si tienes paredes, si no, board_w
-        inner_w = self.board_w
-        # si usas paredes en x=0 y x=board_w-1:
-        # inner_w = self.board_w - 2
+        # --- IMPORTANTE: tenemos paredes en x=0 y x=board_w-1 ---
+        inner_w = self.board_w - 2  # columnas 1..board_w-2
 
-        # centramos dentro del tablero (ajusta si tienes paredes)
-        x = (inner_w - width) // 2 - min_x
-        # si usas paredes, y = 1; si no, y = 0
-        y = 0
+        # Centramos dentro del interior y desplazamos +1 por la pared izquierda
+        x = 1 + (inner_w - width) // 2 - min_x
+
+        # Aparece justo debajo de la pared superior (y=0 es pared)
+        y = 1
 
         piece = Piece(kind, x, y, rotation)
 
         if not self._can_place(piece, x, y, rotation):
+            # No hay espacio para nueva pieza -> game over
             self.game_over = True
             return
 
         self.current_piece = piece
 
-        # Aseguramos que la cola siga llena para las próximas
+        # Aseguramos que la cola siga llena para las siguientes previews
         self._refill_next_queue(full=False)
-
 
     # ------------------------------------------------------------------
     # Utilidades sobre piezas/tablero
@@ -391,18 +400,34 @@ class TetrisGame(BaseGame):
     def _clear_full_lines(self):
         new_board = []
         cleared = 0
+
         for y in range(self.board_h):
             row = self.board[y]
-            if all(cell is not None for cell in row):
+
+            # Fila superior e inferior: son paredes, siempre se conservan
+            if y == 0 or y == self.board_h - 1:
+                new_board.append(list(row))
+                continue
+
+            # Revisar SOLO las columnas interiores (1..board_w-2)
+            if all(row[x] is not None for x in range(1, self.board_w - 1)):
+                # Linea completa -> se elimina
                 cleared += 1
             else:
                 new_board.append(list(row))
-        # añadir filas vacías arriba
+
+        # Rellenar filas nuevas por arriba del pozo, manteniendo paredes laterales
         while len(new_board) < self.board_h:
-            new_board.insert(0, [None for _ in range(self.board_w)])
+            row = [None] * self.board_w
+            row[0] = self.wall_color
+            row[self.board_w - 1] = self.wall_color
+            # Insertamos en y=1 (justo debajo de la pared superior)
+            new_board.insert(1, row)
+
         self.board = new_board
         self.total_lines_cleared += cleared
         return cleared
+
 
     def _apply_scoring(self, lines):
         if lines <= 0:
@@ -535,8 +560,13 @@ class TetrisGame(BaseGame):
         # Calculamos las celdas finales en (x, y) encontrado.
         return self._piece_cells(piece, x=x, y=y, rotation=rotation)
 
-
     def draw(self, engine):
+
+        # Fondo
+        for y in range(self.board_h):
+            for x in range(self.board_w):
+                engine.draw_brick(x, y, color=self.color_bg)
+
         # Tablero fijo
         for y in range(self.board_h):
             for x in range(self.board_w):
@@ -544,7 +574,7 @@ class TetrisGame(BaseGame):
                 if color is not None:
                     engine.draw_brick(x, y, color=color)
         
-                # ---------- GHOST PIECE (sombra) ----------
+        # ---------- GHOST PIECE (sombra) ----------
         ghost_cells = self._compute_ghost_cells()
         if ghost_cells is not None:
             for (gx, gy) in ghost_cells:

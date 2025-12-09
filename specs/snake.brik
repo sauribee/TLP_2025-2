@@ -4,8 +4,8 @@ game "snake" {
 
     board {
         width = 20;
-        height = 20;
-        cell_size = 24;
+        height = 24;
+        cell_size = 20;
         wrap = false;
 
         colors {

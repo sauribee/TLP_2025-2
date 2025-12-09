@@ -387,13 +387,13 @@ class MovingBrickDemo(object):
 
 if __name__ == "__main__":
     engine = GameEngine(
-        game_width_px=640,
+        game_width_px=400,
         height_px=480,
-        cell_size=20,   # 32x24 celdas en el área de juego
-        tick_ms=50,     # ~20 FPS
-        info_width_px=360   # Panel de info a la derecha
+        cell_size=20,
+        tick_ms=50,
+        info_width_px=240,
     )
-
     demo = MovingBrickDemo(engine)
     engine.set_game(demo)
     engine.start()
+

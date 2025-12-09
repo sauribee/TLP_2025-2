@@ -3,12 +3,13 @@ tetris version 1.0
 game "tetris" {
 
     board {
-        width = 25;
-        height = 25;
+        width = 20;
+        height = 24;
         colors {
-            background = #8F8F8F;
+            background = #000000;
             grid       = #000000;
-            ghost      = #BBBBBB;   // <<< NUEVO: color de la sombra
+            ghost      = #BBBBBB;
+            walls      = #555555;
         }
     }
 

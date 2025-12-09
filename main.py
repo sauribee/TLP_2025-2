@@ -8,51 +8,54 @@ from engine import GameEngine
 from games.snake_game import SnakeGame
 from games.tetris_game import TetrisGame
 
-MAX_GAME_W = 640
-MAX_GAME_H = 480
+MAX_WIN_W = 640   # ancho total de la ventana (juego + info)
+MAX_WIN_H = 480   # alto total de la ventana
 
 
 def make_engine_from_symbols(symbols):
     """
     Construye el GameEngine usando los parámetros de 'board' del .brik,
-    pero forzando que el área de juego (canvas izquierdo) sea 640x480.
+    forzando que la ventana completa sea 640x480.
+
+    El canvas de juego tendrá ancho = board.width * cell_size,
+    y el resto hasta 640 px será el panel de información.
     """
     board_w = sym_int(symbols, "board.width", 20)
     board_h = sym_int(symbols, "board.height", 20)
     cell    = sym_int(symbols, "board.cell_size", 20)
 
-    # Tamaño ideal según el .brik
-    ideal_w = board_w * cell
-    ideal_h = board_h * cell
-
     # Cell máximo que permite que el board quepa en 640x480
-    max_cell_x = MAX_GAME_W // board_w if board_w > 0 else 1
-    max_cell_y = MAX_GAME_H // board_h if board_h > 0 else 1
-
-    max_cell = min(max_cell_x, max_cell_y)
+    max_cell_x = MAX_WIN_W // board_w if board_w > 0 else cell
+    max_cell_y = MAX_WIN_H // board_h if board_h > 0 else cell
+    max_cell   = min(max_cell_x, max_cell_y)
     if max_cell <= 0:
-        max_cell = 1  # por seguridad
+        max_cell = 1
 
-    # Si el tamaño ideal se pasa de 640x480, recortamos cell
-    if ideal_w > MAX_GAME_W or ideal_h > MAX_GAME_H:
-        cell = max_cell
-
-    # Si el .brik pedía algo aún mayor, también lo recortamos
+    # Si el .brik pide un cell muy grande, lo recortamos
     if cell > max_cell:
         cell = max_cell
 
-    # El área de juego ES siempre 640x480
-    game_width_px = MAX_GAME_W
-    height_px     = MAX_GAME_H
+    # --- Aquí viene la clave ---
+    # El canvas de juego ocupa exactamente el ancho del tablero
+    game_width_px = board_w * cell
+
+    # El resto hasta 640 px es el panel de info
+    info_width_px = max(0, MAX_WIN_W - game_width_px)
+
+    # Alto total fijo 480 (asegúrate de que board_h * cell == 480
+    # en tus .brik para no tener franjas negras arriba/abajo).
+    height_px = MAX_WIN_H
 
     engine = GameEngine(
         game_width_px=game_width_px,
         height_px=height_px,
         cell_size=cell,
         tick_ms=50,
-        info_width_px=360,
+        info_width_px=info_width_px,
     )
+
     return engine
+
 
 
 def choose_game():

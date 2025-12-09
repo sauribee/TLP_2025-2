@@ -19,8 +19,8 @@ class SnakeGame(BaseGame):
         # ------------------------------------------------------------------
         # Lectura de parámetros del tablero
         # ------------------------------------------------------------------
-        self.board_w = sym_int(symbols, 'board.width', 20)
-        self.board_h = sym_int(symbols, 'board.height', 20)
+        self.board_w = sym_int(symbols, 'board.width', engine.grid_width)
+        self.board_h = sym_int(symbols, 'board.height', engine.grid_height)
         self.wrap = sym_bool(symbols, 'board.wrap', False)
         self.cell_size = sym_int(symbols, 'board.cell_size', 20)
 
@@ -85,6 +85,22 @@ class SnakeGame(BaseGame):
         if level_grid is not None:
             self._build_walls_from_grid(level_grid)
 
+        # Zona jugable interior (dentro del rectángulo de paredes)
+        if self.walls:
+            xs = [x for (x, y) in self.walls]
+            ys = [y for (x, y) in self.walls]
+            self.wall_min_x = min(xs)
+            self.wall_max_x = max(xs)
+            self.wall_min_y = min(ys)
+            self.wall_max_y = max(ys)
+        else:
+            # Si no hay paredes, usamos todo el board
+            self.wall_min_x = 0
+            self.wall_max_x = self.board_w - 1
+            self.wall_min_y = 0
+            self.wall_max_y = self.board_h - 1
+
+
         # ------------------------------------------------------------------
         # Estado del juego
         # ------------------------------------------------------------------
@@ -108,7 +124,6 @@ class SnakeGame(BaseGame):
         self.snake = []
         self.snake_set = set()
         self.food = None
-        self._init_snake_and_food()
         
         # ------------------ Portales ------------------
         self.portals = {}
@@ -129,8 +144,9 @@ class SnakeGame(BaseGame):
             p1_from = sym_get(symbols, "portals.p1_from", None)
             p1_to   = sym_get(symbols, "portals.p1_to",   None)
             if p1_from and p1_to:
-                a = tuple(p1_from)
-                b = tuple(p1_to)
+                a = self._clamp_to_play_area(p1_from[0], p1_from[1])
+                b = self._clamp_to_play_area(p1_to[0],   p1_to[1])
+
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
@@ -139,12 +155,20 @@ class SnakeGame(BaseGame):
             p2_from = sym_get(symbols, "portals.p2_from", None)
             p2_to   = sym_get(symbols, "portals.p2_to",   None)
             if p2_from and p2_to:
-                a = tuple(p2_from)
-                b = tuple(p2_to)
+                a = self._clamp_to_play_area(p2_from[0], p2_from[1])
+                b = self._clamp_to_play_area(p2_to[0],   p2_to[1])
+
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
                 self.portal_cells.add(b)
+
+        self._init_snake_and_food()
+
+    def _clamp_to_play_area(self, x, y):
+        x = max(self.wall_min_x + 1, min(self.wall_max_x - 1, x))
+        y = max(self.wall_min_y + 1, min(self.wall_max_y - 1, y))
+        return (x, y)
 
     def _spawn_random_portals(self):
         """
@@ -155,10 +179,9 @@ class SnakeGame(BaseGame):
         self.portals.clear()
         self.portal_cells.clear()
 
-        # Construimos lista de celdas válidas (no paredes)
         valid = []
-        for y in range(self.board_h):
-            for x in range(self.board_w):
+        for y in range(self.wall_min_y + 1, self.wall_max_y):
+            for x in range(self.wall_min_x + 1, self.wall_max_x):
                 pos = (x, y)
                 if pos in self.walls:
                     continue
@@ -194,8 +217,9 @@ class SnakeGame(BaseGame):
 
     def _build_walls_from_grid(self, grid):
         """
-        level.grid es una matriz de 0/1. Mapeamos esa matriz al tablero
-        de tamaño (board_w x board_h) usando un escalado entero.
+        level.grid es una matriz de 0/1. La usamos para obst&aacute;culos internos.
+        La orilla (primera/última fila/columna) la ignoramos porque el marco
+        externo lo construimos aparte para que sea único y cubra todo el board.
         """
         h = len(grid)
         if h == 0:
@@ -209,15 +233,33 @@ class SnakeGame(BaseGame):
         sx = max(1, self.board_w // w)
         sy = max(1, self.board_h // h)
 
+        # Obstáculos internos (ignoramos la orilla del grid)
         for gy in range(h):
             row = grid[gy]
             for gx in range(len(row)):
-                if row[gx]:
-                    # marcamos un bloque sx x sy como pared
-                    for y in range(gy * sy, (gy + 1) * sy):
-                        for x in range(gx * sx, (gx + 1) * sx):
-                            if 0 <= x < self.board_w and 0 <= y < self.board_h:
-                                self.walls.add((x, y))
+                if not row[gx]:
+                    continue
+
+                # Saltamos borde del grid: primera/última fila/columna
+                if gy == 0 or gy == h - 1 or gx == 0 or gx == w - 1:
+                    continue
+
+                # Solo celdas internas llegan aquí
+                for y in range(gy * sy, (gy + 1) * sy):
+                    for x in range(gx * sx, (gx + 1) * sx):
+                        if 0 <= x < self.board_w and 0 <= y < self.board_h:
+                            self.walls.add((x, y))
+
+        # --- ÚNICO marco externo en TODO el borde del tablero ---
+        # Lados superior e inferior
+        for x in range(self.board_w):
+            self.walls.add((x, 0))
+            self.walls.add((x, self.board_h - 1))
+
+        # Lados izquierdo y derecho
+        for y in range(self.board_h):
+            self.walls.add((0, y))
+            self.walls.add((self.board_w - 1, y))
 
     # ======================================================================
     #  Inicialización de snake + comida
@@ -252,14 +294,21 @@ class SnakeGame(BaseGame):
 
     def _random_empty_cell(self):
         """
-        Escoge una celda aleatoria que no sea pared ni parte de la snake.
-        (Versión sencilla; para tableros casi llenos podría ser más inteligente).
+        Retorna una celda vacía DENTRO del rectángulo de paredes,
+        sin paredes, snake ni portales.
         """
         while True:
-            x = random.randint(0, self.board_w - 1)
-            y = random.randint(0, self.board_h - 1)
-            if (x, y) not in self.walls and (x, y) not in self.snake_set:
-                return (x, y)
+            x = random.randint(self.wall_min_x + 1, self.wall_max_x - 1)
+            y = random.randint(self.wall_min_y + 1, self.wall_max_y - 1)
+            pos = (x, y)
+
+            if pos in self.snake_set:
+                continue
+            if pos in self.walls:
+                continue
+            if pos in self.portal_cells:
+                continue
+            return pos
 
     def _spawn_food(self):
         self.food = self._random_empty_cell()
