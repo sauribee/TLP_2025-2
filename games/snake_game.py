@@ -576,6 +576,7 @@ class SnakeGame(BaseGame):
                 anchor="nw",
                 font=engine.font_label
             )
+
             engine.draw_text(
                 20, 100,
                 str(self.score),
@@ -583,15 +584,7 @@ class SnakeGame(BaseGame):
                 anchor="nw",
                 font=engine.font_value
             )
-
-            engine.draw_text(
-                20, 130,
-                "Tick actual: %d ms" % self.tick_ms,
-                where="info",
-                anchor="nw",
-                font=engine.font_hint
-            )
-
+            
             engine.draw_text(
                 20, 160,
                 "Manzanas comidas: %d" % self.apples_eaten,
