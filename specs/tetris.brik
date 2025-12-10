@@ -199,7 +199,7 @@ game "tetris" {
         }
     }
 
-    available_pieces = [ piece_I, piece_O, piece_T, piece_J, piece_L, piece_S, piece_Z, piece_bomb];
+    available_pieces = [piece_I, piece_O, piece_T, piece_J, piece_L, piece_S, piece_Z, piece_bomb];
 
     rules_for_bomb {
         blast_radius = 1;

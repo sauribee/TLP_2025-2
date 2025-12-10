@@ -10,7 +10,7 @@ game "snake" {
 
         colors {
             background = #FFFFFF;
-            walls      = #485CF7;
+            walls      = #555555;
             snake_body = #2C8D3E;
             apple      = #F74848;
             grid       = #CCCCCC;
