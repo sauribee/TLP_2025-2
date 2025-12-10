@@ -505,23 +505,27 @@ class TetrisGame(BaseGame):
         is_bomb = "bomb" in self.current_piece.kind.lower()
         
         if is_bomb:
-            # Calcular el centro de la bomba para la explosión
+            # Obtener las celdas que ocupa la bomba
             cells = self._piece_cells(self.current_piece)
             if len(cells) > 0:
-                # Calcular centro promedio de las celdas de la bomba
-                center_x = sum(cx for cx, cy in cells) // len(cells)
-                center_y = sum(cy for cx, cy in cells) // len(cells)
+                # Encontrar la esquina superior izquierda de la bomba
+                min_x = min(cx for cx, cy in cells)
+                min_y = min(cy for cx, cy in cells)
                 
-                # Determinar el tamaño de la explosión según el tipo de bomba
+                # Determinar el tamaño de la bomba y la explosión
                 if "1x1" in self.current_piece.kind:
-                    blast_size = 3  # Explota en área 3x3
+                    # Bomba 1x1: explota 3x3 centrada en la bomba
+                    # min_x, min_y es la posición de la bomba
+                    # Explosión: desde (min_x-1, min_y-1) hasta (min_x+1, min_y+1)
+                    self._explode_bomb_area(min_x - 1, min_y - 1, 3, 3)
                 elif "2x2" in self.current_piece.kind:
-                    blast_size = 4  # Explota en área 4x4
+                    # Bomba 2x2: explota 4x4 con la bomba 2x2 en el centro
+                    # Bomba ocupa: (min_x, min_y) a (min_x+1, min_y+1)
+                    # Explosión: desde (min_x-1, min_y-1) hasta (min_x+2, min_y+2)
+                    self._explode_bomb_area(min_x - 1, min_y - 1, 4, 4)
                 else:
-                    blast_size = 3  # Por defecto
-                
-                # Explotar el área centrada en la bomba
-                self._explode_bomb(center_x, center_y, blast_size)
+                    # Por defecto: 3x3
+                    self._explode_bomb_area(min_x - 1, min_y - 1, 3, 3)
             
             self.current_piece = None
             self._spawn_new_piece()
@@ -540,27 +544,36 @@ class TetrisGame(BaseGame):
 
             self._spawn_new_piece()
     
-    def _explode_bomb(self, center_x, center_y, blast_size):
+    def _explode_bomb_area(self, start_x, start_y, width, height):
         """
-        Explota una bomba borrando todas las celdas en un área cuadrada.
-        blast_size: tamaño del área de explosión (3 para 3x3, 4 para 4x4)
-        """
-        # Calcular el radio de explosión (cuántas celdas desde el centro)
-        radius = blast_size // 2
+        Explota una bomba borrando todas las celdas en un área rectangular.
         
+        Args:
+            start_x: coordenada X de la esquina superior izquierda del área
+            start_y: coordenada Y de la esquina superior izquierda del área
+            width: ancho del área de explosión
+            height: alto del área de explosión
+        
+        Ejemplo:
+            - Bomba 1x1 en (5, 10): _explode_bomb_area(4, 9, 3, 3)
+              Borra desde (4,9) hasta (6,11) = 3x3
+            
+            - Bomba 2x2 en (5, 10): _explode_bomb_area(4, 9, 4, 4)
+              Borra desde (4,9) hasta (7,12) = 4x4
+        """
         # Borrar todas las celdas en el área de explosión
-        for dy in range(-radius, radius + (blast_size % 2)):
-            for dx in range(-radius, radius + (blast_size % 2)):
-                ex = center_x + dx
-                ey = center_y + dy
+        for dy in range(height):
+            for dx in range(width):
+                ex = start_x + dx
+                ey = start_y + dy
                 
-                # Verificar que esté dentro del tablero
+                # Verificar que esté dentro del tablero (sin tocar paredes)
                 if 0 < ex < self.board_w - 1 and 0 < ey < self.board_h - 1:
-                    # Borrar la celda (no tocar paredes)
+                    # Borrar la celda
                     self.board[ey][ex] = None
         
-        # Bonus de puntos por usar bomba
-        self.score += blast_size * 50
+        # Bonus de puntos por usar bomba (basado en área)
+        self.score += (width * height) * 10
 
     def _clear_full_lines(self):
         new_board = []

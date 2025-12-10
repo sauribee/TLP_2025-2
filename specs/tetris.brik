@@ -209,7 +209,7 @@ game "tetris" {
                     [0,0,0,0]
                 ]
             ];
-            blast_radius = 2;
+            blast_radius = 4;
             is_bomb = true;
         }
     }
@@ -223,7 +223,7 @@ game "tetris" {
 
     rules_random_pieces {
         random_bombs = true;
-        bomb_chance = 0.5;
+        bomb_chance = 0.1;
     }
 
     rules_end_game {

@@ -174,10 +174,13 @@ class SnakeGame(BaseGame):
         self.portal_pairs = []   # Lista de pares [(a, b, color_a, color_b), ...]
         
         # Colores predefinidos para pares de portales
+        # Cada par usa el MISMO color para ambos portales (entrada y salida)
         self.pair_colors = [
-            ("#9932CC", "#FF69B4"),  # Morado y rosado (par 1)
-            ("#00CED1", "#FFD700"),  # Cian y dorado (par 2)
-            ("#FF4500", "#32CD32"),  # Naranja y verde lima (par 3)
+            "#9932CC",  # Morado (par 1)
+            "#FFD700",  # Amarillo/Dorado (par 2)
+            "#00CED1",  # Cian (par 3)
+            "#FF4500",  # Naranja (par 4)
+            "#32CD32",  # Verde lima (par 5)
         ]
 
         # ¿Portales aleatorios o fijos del .brik?
@@ -195,15 +198,16 @@ class SnakeGame(BaseGame):
             if p1_from and p1_to:
                 a = self._clamp_to_play_area(p1_from[0], p1_from[1])
                 b = self._clamp_to_play_area(p1_to[0],   p1_to[1])
-                color_a, color_b = self.pair_colors[pair_idx % len(self.pair_colors)]
+                # Ambos portales del par usan el mismo color
+                color = self.pair_colors[pair_idx % len(self.pair_colors)]
                 
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
                 self.portal_cells.add(b)
-                self.portal_colors[a] = color_a
-                self.portal_colors[b] = color_b
-                self.portal_pairs.append((a, b, color_a, color_b))
+                self.portal_colors[a] = color
+                self.portal_colors[b] = color
+                self.portal_pairs.append((a, b, color))
                 pair_idx += 1
 
             p2_from = sym_get(symbols, "portals.p2_from", None)
@@ -211,15 +215,16 @@ class SnakeGame(BaseGame):
             if p2_from and p2_to:
                 a = self._clamp_to_play_area(p2_from[0], p2_from[1])
                 b = self._clamp_to_play_area(p2_to[0],   p2_to[1])
-                color_a, color_b = self.pair_colors[pair_idx % len(self.pair_colors)]
+                # Ambos portales del par usan el mismo color
+                color = self.pair_colors[pair_idx % len(self.pair_colors)]
                 
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
                 self.portal_cells.add(b)
-                self.portal_colors[a] = color_a
-                self.portal_colors[b] = color_b
-                self.portal_pairs.append((a, b, color_a, color_b))
+                self.portal_colors[a] = color
+                self.portal_colors[b] = color
+                self.portal_pairs.append((a, b, color))
                 pair_idx += 1
 
         self._init_snake_and_food()
@@ -266,8 +271,8 @@ class SnakeGame(BaseGame):
             a = chosen[2 * i]
             b = chosen[2 * i + 1]
             
-            # Obtener colores para este par
-            color_a, color_b = self.pair_colors[i % len(self.pair_colors)]
+            # Obtener color para este par (ambos portales mismo color)
+            color = self.pair_colors[i % len(self.pair_colors)]
 
             # mapa bidireccional
             self.portals[a] = b
@@ -276,10 +281,10 @@ class SnakeGame(BaseGame):
             self.portal_cells.add(a)
             self.portal_cells.add(b)
             
-            self.portal_colors[a] = color_a
-            self.portal_colors[b] = color_b
+            self.portal_colors[a] = color
+            self.portal_colors[b] = color
             
-            self.portal_pairs.append((a, b, color_a, color_b))
+            self.portal_pairs.append((a, b, color))
 
 
     # ======================================================================
@@ -606,14 +611,16 @@ class SnakeGame(BaseGame):
                 )
                 
                 y_offset = 230
-                for idx, (a, b, color_a, color_b) in enumerate(self.portal_pairs):
-                    # Dibujar indicador de color para portal A
+                for idx, (a, b, color) in enumerate(self.portal_pairs):
+                    # Dibujar indicador de color para el par de portales
                     if hasattr(engine.info_canvas, 'create_rectangle'):
                         x_start = 20
+                        # Portal A
                         engine.info_canvas.create_rectangle(
                             x_start, y_offset, x_start + 15, y_offset + 15,
-                            fill=color_a, outline="white"
+                            fill=color, outline="white"
                         )
+                        # Flecha bidireccional
                         engine.info_canvas.create_text(
                             x_start + 20, y_offset + 7,
                             text="<->",
@@ -621,9 +628,10 @@ class SnakeGame(BaseGame):
                             anchor="w",
                             font=engine.font_hint
                         )
+                        # Portal B (mismo color)
                         engine.info_canvas.create_rectangle(
                             x_start + 45, y_offset, x_start + 60, y_offset + 15,
-                            fill=color_b, outline="white"
+                            fill=color, outline="white"
                         )
                     y_offset += 20
                 
