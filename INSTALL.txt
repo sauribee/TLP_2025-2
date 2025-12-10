@@ -45,13 +45,13 @@ Si tienes Git instalado:
 1. Abre una terminal de comandos (cmd.exe)
 
 2. Navega al directorio donde deseas instalar el proyecto:
-   cd C:\Users\TuUsuario\Documentos
+  cd C:\Users\TuUsuario\Documentos
 
 3. Clona el repositorio:
-   git clone https://github.com/sauribee/TLP_2025-2.git
+  git clone https://github.com/sauribee/TLP_2025-2.git
 
 4. Entra al directorio del proyecto:
-   cd TLP_2025-2
+  cd TLP_2025-2
 
 
 Opcion B: Descargar ZIP
@@ -63,51 +63,10 @@ Si no tienes Git:
 2. Haz clic en el boton verde "Code" y selecciona "Download ZIP"
 
 3. Extrae el archivo ZIP en la ubicacion de tu preferencia
-   (por ejemplo: C:\Users\TuUsuario\Documentos\TLP_2025-2)
-
-
--------------------------------------------------------------
-## 3. Estructura de Archivos del Proyecto
--------------------------------------------------------------
-
-Para que el proyecto funcione correctamente, los archivos deben estar
-organizados de la siguiente manera:
-
-TLP_2025-2/
-|
-+--- main.py                (Punto de entrada principal)
-+--- compiler.py            (Compilador .brik -> .json)
-+--- runtime.py             (Cargador de configuraciones)
-+--- engine.py              (Motor grafico Tkinter)
-+--- RUN_BRICK_GAMES.BAT    (Script launcher para Windows)
-+--- README.txt             (Informacion general del proyecto)
-+--- INSTALL.txt            (Este archivo)
-+--- requirements.txt       (Lista de dependencias - vacia)
-|
-+--- dsl/                   (Implementacion del DSL)
-|    +--- lexer.py
-|    +--- brik_parser.py
-|    +--- symbols.py
-|    \--- brik.py
-|
-+--- games/                 (Logica de los juegos)
-|    +--- base_game.py
-|    +--- snake_game.py
-|    \--- tetris_game.py
-|
-+--- specs/                 (Configuraciones .brik y compiladas)
-|    +--- snake.brik
-|    +--- snake.json
-|    +--- tetris.brik
-|    \--- tetris.json
-|
-+--- bnf/                   (Gramaticas formales)
-+--- docs/                  (Documentacion)
-\--- screenshots/           (Capturas de pantalla)
-
+   
 
 -------------------------------------------------------------
-## 4. Verificacion de la Instalacion
+## 3. Verificacion de la Instalacion
 -------------------------------------------------------------
 
 Antes de ejecutar los juegos, verifica que Python 2.7 este correctamente
@@ -118,8 +77,6 @@ instalado:
 2. Ejecuta el siguiente comando:
    C:\Python27\python.exe --version
 
-3. Deberia aparecer algo como:
-   Python 2.7.18
 
 Si aparece un error como "'python' no se reconoce como un comando...",
 significa que Python 2.7 no fue agregado al PATH. No te preocupes, el
@@ -127,7 +84,7 @@ script RUN_BRICK_GAMES.BAT esta configurado para funcionar de todas formas.
 
 
 -------------------------------------------------------------
-## 5. Como Compilar y Ejecutar los Juegos
+## 4. Como Compilar y Ejecutar los Juegos
 -------------------------------------------------------------
 
 METODO 1: Usando el Launcher (MAS FACIL)
@@ -195,7 +152,7 @@ Si deseas compilar los archivos .brik manualmente antes de ejecutarlos:
 
 
 -------------------------------------------------------------
-## 6. Solucion de Problemas Comunes
+## 5. Solucion de Problemas Comunes
 -------------------------------------------------------------
 
 PROBLEMA: 'python' no se reconoce como un comando interno o externo...
@@ -235,127 +192,3 @@ PROBLEMA: ImportError: No module named Tkinter
 * **Solucion:** Reinstala Python 2.7 asegurandote de seleccionar la
   opcion "tcl/tk and IDLE" durante la instalacion. Tkinter deberia
   venir incluido por defecto.
-
-
-PROBLEMA: ERROR al compilar specs/snake.brik: [mensaje de error]
------------------------------------------------------------------
-* **Causa:** Hay un error de sintaxis en el archivo .brik que modificaste.
-
-* **Solucion:** 
-  1. Revisa el archivo .brik cuidadosamente
-  2. Compara con los ejemplos en docs/DSL_REFERENCE.md
-  3. Asegurate de que:
-     - Todas las asignaciones terminen con punto y coma (;)
-     - Las llaves { } esten correctamente balanceadas
-     - Los colores tengan formato #RRGGBB
-     - Las cadenas esten entre comillas: "valor"
-  
-  4. Para ver detalles del error, ejecuta el parser directamente:
-     C:\Python27\python.exe dsl/brik.py specs/snake.brik --debug
-
-
-PROBLEMA: El juego se ve muy pequeno o muy grande
---------------------------------------------------
-* **Causa:** La configuracion de cell_size en el archivo .brik no es
-  optima para tu resolucion de pantalla.
-
-* **Solucion:** Edita el archivo .brik correspondiente (specs/snake.brik
-  o specs/tetris.brik) y ajusta los valores:
-  
-  board {
-      width = 20;
-      height = 24;
-      cell_size = 20;    // Cambia este valor (10-30 recomendado)
-  }
-  
-  Luego recompila: C:\Python27\python.exe compiler.py --all
-
-
-PROBLEMA: El juego va muy rapido o muy lento
----------------------------------------------
-* **Causa:** El valor de tick_ms en el .brik determina la velocidad.
-
-* **Solucion:** Edita el archivo .brik y ajusta:
-  
-  Para Snake:
-  snake {
-      tick_ms = 120;    // Aumenta para mas lento, disminuye para mas rapido
-  }
-  
-  Para Tetris:
-  tetris {
-      tick_ms = 650;    // Aumenta para mas lento, disminuye para mas rapido
-  }
-  
-  Luego recompila el archivo.
-
-
-PROBLEMA: La ventana del juego no se cierra correctamente
-----------------------------------------------------------
-* **Causa:** Problema con el event loop de Tkinter.
-
-* **Solucion:** Cierra la ventana usando el boton X (cerrar) de Windows.
-  Si no responde, usa Ctrl+C en la terminal o el Administrador de Tareas.
-
-
--------------------------------------------------------------
-## 7. Desinstalacion
--------------------------------------------------------------
-
-Para desinstalar el proyecto:
-
-1. Elimina la carpeta completa del proyecto:
-   C:\Users\TuUsuario\Documentos\TLP_2025-2
-
-2. (Opcional) Desinstala Python 2.7:
-   - Ve a Panel de Control > Programas > Desinstalar un programa
-   - Busca "Python 2.7" y desinstala
-
-NOTA: Si usas Python 2.7 para otros proyectos, NO lo desinstales.
-
-
--------------------------------------------------------------
-## 8. Soporte Tecnico
--------------------------------------------------------------
-
-Si encuentras problemas no listados en este documento:
-
-1. Revisa la documentacion en docs/DSL_REFERENCE.md y docs/API.md
-
-2. Verifica que todos los archivos del proyecto esten completos
-   (compara con la estructura en la seccion 3)
-
-3. Abre un issue en GitHub:
-   https://github.com/sauribee/TLP_2025-2/issues
-
-4. Contacta al equipo del proyecto (ver README.txt para detalles)
-
-
--------------------------------------------------------------
-## 9. Notas para Desarrolladores
--------------------------------------------------------------
-
-Si deseas modificar o extender el proyecto:
-
-* El codigo esta documentado en espanol
-* Usa Python 2.7 para mantener compatibilidad
-* Consulta docs/API.md para la API del motor
-* Consulta docs/DSL_REFERENCE.md para la sintaxis .brik completa
-* Las gramaticas BNF estan en bnf/snake.bnf y bnf/tetris.bnf
-* Para crear un nuevo juego, hereda de games/base_game.py
-
-Herramientas utiles para desarrollo:
-
-* Validar sintaxis .brik:
-  C:\Python27\python.exe dsl/brik.py specs/archivo.brik
-
-* Ver AST y tabla de simbolos:
-  C:\Python27\python.exe dsl/brik.py specs/archivo.brik --debug
-
-* Probar el motor grafico:
-  C:\Python27\python.exe engine.py
-
-
-=============================================================
-                   Fin del documento
-=============================================================
