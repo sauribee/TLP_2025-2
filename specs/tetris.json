@@ -639,7 +639,7 @@
     },
     "rules_random_pieces": {
       "random_bombs": true,
-      "bomb_chance": 0.1
+      "bomb_chance": 0.125
     },
     "rules_end_game": {
       "game_over": "stack_reaches_top"
@@ -1273,7 +1273,7 @@
     "rules_for_bomb.bomb_1x1_blast": 3,
     "rules_for_bomb.bomb_2x2_blast": 4,
     "rules_random_pieces.random_bombs": true,
-    "rules_random_pieces.bomb_chance": 0.1,
+    "rules_random_pieces.bomb_chance": 0.125,
     "rules_end_game.game_over": "stack_reaches_top",
     "rules_speed_levels.speed_increase": true,
     "rules_speed_levels.level_up_each": 1000,

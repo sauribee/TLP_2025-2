@@ -1,51 +1,82 @@
 snake version 1.0
 
+// ============================================================================
+// Configuración del juego Snake
+// ============================================================================
+// Este archivo define todas las reglas, portales y comportamientos del Snake
+// Compatible con Python 2.7 y el motor Brick Game Engine
+
 game "snake" {
 
+    // ------------------------------------------------------------------------
+    // Tablero de juego
+    // ------------------------------------------------------------------------
     board {
-        width = 20;
-        height = 24;
-        cell_size = 20;
-        wrap = false;
+        width = 20;       // Ancho del tablero (incluye paredes)
+        height = 24;      // Alto del tablero (incluye paredes)
+        cell_size = 20;   // Tamaño de cada celda del tablero
+        wrap = false;     // false = paredes sólidas, true = wrap around
 
         colors {
-            background = #FFFFFF;
-            walls      = #555555;
-            snake_body = #2C8D3E;
-            apple      = #F74848;
-            grid       = #CCCCCC;
-            portal     = #FFD700;
+            background = #FFFFFF;  // Blanco - Fondo del tablero
+            walls      = #555555;  // Gris oscuro - Paredes del tablero
+            snake_body = #2C8D3E;  // Verde - Cuerpo de la serpiente
+            apple      = #F74848;  // Rojo - Manzanas
+            grid       = #CCCCCC;  // Gris claro - Líneas de la grilla
+            portal     = #FFD700;  // Dorado - Portales (color base, se sobrescribe)
         }
     }
 
+    // ------------------------------------------------------------------------
+    // Sistema de portales de teletransporte
+    // ------------------------------------------------------------------------
+    // Los portales conectan dos posiciones del tablero
+    // Cada par usa el MISMO color para ambos portales (entrada y salida)
+    // Colores por par: Morado (#9932CC), Amarillo (#FFD700), Cian (#00CED1)
+    // ------------------------------------------------------------------------
     portals {
-    random = true; // si true => ignora p1_*, p2_* y crea aleatorios
-    num_pairs = 2; // cuántos pares de portales quieres (por defecto 2)
+        random = true;   // true = genera portales aleatorios
+                        // false = usa posiciones fijas (p1_*, p2_*)
+        
+        num_pairs = 2;  // Cantidad de pares de portales (máximo 5)
 
-    p1_from = [3, 10]; // se usan solo si random = false
-    p1_to   = [15, 10];
+        // Posiciones fijas (solo se usan si random = false)
+        p1_from = [3, 10];   // Portal 1 - Entrada
+        p1_to   = [15, 10];  // Portal 1 - Salida
 
-    p2_from = [4, 5];
-    p2_to   = [4, 15];
+        p2_from = [4, 5];    // Portal 2 - Entrada
+        p2_to   = [4, 15];   // Portal 2 - Salida
     }
 
 
+    // ------------------------------------------------------------------------
+    // Controles del juego
+    // ------------------------------------------------------------------------
     controls {
-        right_mov = "right";
-        left_mov  = "left";
-        down_mov  = "down";
-        up_mov    = "up";
-        pause     = "p";
-        restart   = "r";
+        right_mov = "right";  // Mover serpiente a la derecha
+        left_mov  = "left";   // Mover serpiente a la izquierda
+        down_mov  = "down";   // Mover serpiente abajo
+        up_mov    = "up";     // Mover serpiente arriba
+        pause     = "p";      // Pausar juego
+        restart   = "r";      // Reiniciar juego
     }
 
+    // ------------------------------------------------------------------------
+    // Configuración de la serpiente
+    // ------------------------------------------------------------------------
     snake {
-        tick_ms = 120;
-        initial_length = 1;
-        growth_per_apple = 3;
-        spawn = "random";
+        tick_ms = 120;           // Velocidad inicial de movimiento (ms)
+        initial_length = 1;      // Longitud inicial de la serpiente
+        growth_per_apple = 3;    // Cuanto crece al comer una manzana
+        spawn = "random";        // Posición de aparición (random o fixed)
     }
 
+    // ------------------------------------------------------------------------
+    // Nivel y obstáculos
+    // ------------------------------------------------------------------------
+    // 1 = pared/obstáculo, 0 = espacio libre
+    // El borde externo se construye automáticamente
+    // ------------------------------------------------------------------------
     level {
         grid = [
             [1,1,1,1,1,1,1,1,1,1],
@@ -61,23 +92,35 @@ game "snake" {
         ];
     }
     
+    // ------------------------------------------------------------------------
+    // Condiciones de fin de juego
+    // ------------------------------------------------------------------------
     rules_end_game {
-        on_out_of_bounds = "end";
-        on_self_collision = "end"; 
-        on_wall_collision = "end";
+        on_out_of_bounds = "end";   // Terminar si sale de los límites
+        on_self_collision = "end";  // Terminar si se choca consigo misma
+        on_wall_collision = "end";  // Terminar si choca con una pared
     }
 
+    // ------------------------------------------------------------------------
+    // Progresión de velocidad
+    // ------------------------------------------------------------------------
     rules_speed_progression {
-        speedup_after_apple = 5;
-        min_tick_ms = 60;
+        speedup_after_apple = 5;  // Acelerar cada 5 manzanas comidas
+        min_tick_ms = 60;         // Velocidad máxima (ms mínimo)
     }
 
+    // ------------------------------------------------------------------------
+    // Generación de manzanas
+    // ------------------------------------------------------------------------
     rules_spawning {
-        apple_respawn_ticks = 5;
-        max_apples = 10;
+        apple_respawn_ticks = 5;  // Ticks para reaparecer manzana
+        max_apples = 10;          // Máximo de manzanas simultáneas
     }
 
+    // ------------------------------------------------------------------------
+    // Puntuación
+    // ------------------------------------------------------------------------
     rules_scoring {
-        apple_points = 10;
+        apple_points = 10;  // Puntos por cada manzana comida
     }
 }

@@ -1,34 +1,53 @@
 tetris version 1.0
 
+// ============================================================================
+// Configuración del juego Tetris
+// ============================================================================
+// Este archivo define todas las reglas, piezas y comportamientos del Tetris
+// Compatible con Python 2.7 y el motor Brick Game Engine
+
 game "tetris" {
 
+    // ------------------------------------------------------------------------
+    // Tablero de juego
+    // ------------------------------------------------------------------------
     board {
-        width = 20;
-        height = 24;
+        width = 20;       // Ancho del tablero (incluye paredes laterales)
+        height = 24;      // Alto del tablero (incluye paredes superior e inferior)
         colors {
-            background = #000000;
-            grid       = #000000;
-            ghost      = #BBBBBB;
-            walls      = #555555;
+            background = #000000;  // Negro - Fondo del tablero
+            grid       = #000000;  // Negro - Líneas de la grilla
+            ghost      = #BBBBBB;  // Gris claro - Pieza fantasma (preview de caída)
+            walls      = #555555;  // Gris oscuro - Paredes del tablero
         }
     }
 
+    // ------------------------------------------------------------------------
+    // Interfaz de usuario
+    // ------------------------------------------------------------------------
     ui {
-    next_queue_length = 3;
+        next_queue_length = 3;  // Cantidad de piezas siguientes a mostrar
     }
 
+    // ------------------------------------------------------------------------
+    // Controles del juego
+    // ------------------------------------------------------------------------
     controls {
-        right_mov = "right";
-        left_mov  = "left";
-        super_drop = "down";
-        rotate = "up";
-        pause = "p";
-        restart = "r";
+        right_mov = "right";   // Mover pieza a la derecha
+        left_mov  = "left";    // Mover pieza a la izquierda
+        super_drop = "down";   // Caída rápida (soft drop)
+        rotate = "up";         // Rotar pieza
+        pause = "p";           // Pausar juego
+        restart = "r";         // Reiniciar juego
     }
 
 
     pieces {
         
+        // ------------------------------------------------------------------------
+        // Pieza I - Verde (#75E689)
+        // Forma: Linea de 4 bloques
+        // ------------------------------------------------------------------------
         piece_I {
             color = "#75E689";
             rotations = [
@@ -47,6 +66,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza O - Azul (#7599E6) - Cuadrado 2x2
         piece_O {
             color = "#7599E6";
             rotations = [
@@ -59,6 +79,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza T - Rojo (#EB3B3B) - Forma de T
         piece_T {
             color = "#EB3B3B";
             rotations = [
@@ -89,6 +110,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza J - Amarillo (#FFE824) - Forma de J
         piece_J {
             color = "#FFE824";
             rotations = [
@@ -119,6 +141,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza L - Morado (#BD24FF) - Forma de L
         piece_L {
             color = "#BD24FF";
             rotations = [
@@ -149,6 +172,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza S - Azul oscuro (#1D00FF) - Forma de S
         piece_S {
             color = "#1D00FF";
             rotations = [
@@ -167,6 +191,7 @@ game "tetris" {
             ];
         }
     
+        // Pieza Z - Verde oscuro (#177A06) - Forma de Z
         piece_Z {
             color = "#177A06";
             rotations = [
@@ -185,6 +210,12 @@ game "tetris" {
             ];
         }
     
+        // ------------------------------------------------------------------------
+        // BOMBA 1x1 - Gris claro (#808080)
+        // ------------------------------------------------------------------------
+        // Explota en area 3x3 centrada en la bomba
+        // Borra todas las piezas en el area de explosion
+        // Bonus de puntos: 90 pts (3x3 x 10)
         piece_bomb_1x1 {
             color = "#808080";
             rotations = [
@@ -195,10 +226,16 @@ game "tetris" {
                     [0,0,0,0]
                 ]
             ];
-            blast_radius = 1;
-            is_bomb = true;
+            blast_radius = 1;   // Radio interno (no usado directamente)
+            is_bomb = true;      // Marca esta pieza como bomba
         }
 
+        // ------------------------------------------------------------------------
+        // BOMBA 2x2 - Gris medio (#909090)
+        // ------------------------------------------------------------------------
+        // Explota en area 4x4 con la bomba 2x2 en el centro
+        // Borra todas las piezas en el area de explosion
+        // Bonus de puntos: 160 pts (4x4 x 10)
         piece_bomb_2x2 {
             color = "#909090";
             rotations = [
@@ -209,43 +246,62 @@ game "tetris" {
                     [0,0,0,0]
                 ]
             ];
-            blast_radius = 4;
-            is_bomb = true;
+            blast_radius = 4;   // Radio interno (no usado directamente)
+            is_bomb = true;      // Marca esta pieza como bomba
         }
     }
 
+    // Lista de todas las piezas disponibles en el juego
     available_pieces = [piece_I, piece_O, piece_T, piece_J, piece_L, piece_S, piece_Z, piece_bomb_1x1, piece_bomb_2x2];
 
+    // ------------------------------------------------------------------------
+    // Reglas de bombas
+    // ------------------------------------------------------------------------
     rules_for_bomb {
-        bomb_1x1_blast = 3;
-        bomb_2x2_blast = 4;
+        bomb_1x1_blast = 3;  // Area de explosion 3x3
+        bomb_2x2_blast = 4;  // Area de explosion 4x4
     }
 
+    // ------------------------------------------------------------------------
+    // Generacion aleatoria de piezas
+    // ------------------------------------------------------------------------
     rules_random_pieces {
-        random_bombs = true;
-        bomb_chance = 0.1;
+        random_bombs = true;   // Permitir bombas aleatorias
+        bomb_chance = 0.125;   // Probabilidad de bomba: 12.5% (1 en 8 piezas aprox.)
     }
 
+    // ------------------------------------------------------------------------
+    // Condiciones de fin de juego
+    // ------------------------------------------------------------------------
     rules_end_game {
-        game_over = "stack_reaches_top";
+        game_over = "stack_reaches_top";  // Game over cuando la pila llega arriba
     }
 
+    // ------------------------------------------------------------------------
+    // Progresion de velocidad por niveles
+    // ------------------------------------------------------------------------
     rules_speed_levels {
-        speed_increase = true;
-        level_up_each = 1000;
-        speed_multiplier = 1.3;
+        speed_increase = true;      // Activar incremento de velocidad
+        level_up_each = 1000;       // Puntos necesarios para subir de nivel
+        speed_multiplier = 1.3;     // Multiplicador de velocidad por nivel
     }
 
+    // ------------------------------------------------------------------------
+    // Puntuacion por lineas completadas
+    // ------------------------------------------------------------------------
     rules_line_clear {
-    line_score = [40, 100, 300, 1200];
-    combo_bonus = 50;
-    level_multiplier = 1.3;
+        line_score = [40, 100, 300, 1200];  // Puntos por 1, 2, 3, 4 lineas
+        combo_bonus = 50;                    // Bonus por combos
+        level_multiplier = 1.3;              // Multiplicador de puntos por nivel
     }
 
+    // ------------------------------------------------------------------------
+    // Configuracion general del Tetris
+    // ------------------------------------------------------------------------
     tetris {
-    tick_ms = 650;
-    gravity = 1;
-    spawn   = "top_center";
+        tick_ms = 650;           // Velocidad inicial de caida (ms)
+        gravity = 1;             // Gravedad (celdas por tick)
+        spawn   = "top_center";  // Posicion de aparicion de piezas
     }
 
 }

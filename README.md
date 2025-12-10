@@ -6,12 +6,21 @@ Motor de juegos retro estilo **Game Boy** desarrollado en **Python 2.7** con un 
 
 ## 🌟 Características
 
-- 🐍 **Snake** con portales aleatorios y sistema de aceleración progresiva
-- 🧱 **Tetris** clásico con pieza bomba especial y sistema de combos
+- 🐍 **Snake** con portales de teletransporte coloreados y sistema de aceleración progresiva
+  - Portales con colores unificados por par (morado, amarillo, cian)
+  - Panel de información que muestra los pares de portales activos
+  - Restricción de portales: no aparecen en los bordes del tablero
+- 🧱 **Tetris** clásico con piezas bomba especiales y sistema de combos
+  - Bomba 1x1 (gris claro): explota en área 3×3 centrada en la bomba
+  - Bomba 2x2 (gris medio): explota en área 4×4 con la bomba en el centro
+  - Probabilidad configurable de aparición de bombas (12.5% por defecto)
+  - Sistema de puntuación con bonus por uso de bombas
 - 🔧 **DSL personalizado** (`.brik`) para configurar reglas, colores, controles y mecánicas
 - 🎨 **Interfaz retro** con panel de información en tiempo real
 - ⚡ **Motor gráfico** basado en Tkinter con sistema de grilla
 - 🎯 **Arquitectura modular** que facilita agregar nuevos juegos
+- 📦 **Compilador** (compiler.py) para generar archivos JSON desde archivos .brik
+- 📝 **Gramáticas BNF** formales para Snake y Tetris
 
 ---
 
@@ -69,15 +78,26 @@ Motor de juegos retro estilo **Game Boy** desarrollado en **Python 2.7** con un 
 
 **Objetivo**: Come manzanas, crece y evita chocar con paredes o tu propio cuerpo. ¡Usa los portales para teletransportarte!
 
+**Características especiales**:
+- 🟣 Portales morados (Par 1): conectan dos posiciones del tablero
+- 🟡 Portales amarillos (Par 2): conectan dos posiciones diferentes
+- 📊 Panel de información muestra los pares de portales activos
+
 ### Tetris 🧱
 
 - **Flecha izquierda/derecha**: Mover pieza
 - **Flecha arriba**: Rotar pieza
-- **Flecha abajo**: Drop rápido
+- **Flecha abajo**: Drop rápido (soft drop)
 - **P**: Pausar
 - **R**: Reiniciar
 
-**Objetivo**: Completa líneas horizontales para obtener puntos. La pieza bomba especial destruye bloques cercanos.
+**Objetivo**: Completa líneas horizontales para obtener puntos. ¡Usa las bombas especiales estratégicamente!
+
+**Piezas especiales - Bombas**:
+- 💣 **Bomba 1x1** (gris claro #808080): Explota en área 3×3, otorga 90 puntos
+- 💣💣 **Bomba 2x2** (gris medio #909090): Explota en área 4×4, otorga 160 puntos
+- ⚡ Las bombas aparecen aleatoriamente con 12.5% de probabilidad (1 en 8 piezas aprox.)
+- 🎯 Al aterrizar, la bomba borra todas las piezas en su área de explosión
 
 ---
 
@@ -88,21 +108,26 @@ TLP_2025-2/
 ├── dsl/                    # Domain Specific Language (.brik)
 │   ├── lexer.py           # Tokenizador del lenguaje
 │   ├── brik_parser.py     # Parser y generador de AST
-│   ├── symbols.py         # Tabla de símbolos
-│   └── brikc.py           # Compilador standalone
+│   └── symbols.py         # Generador de tabla de símbolos
 ├── games/                  # Implementación de juegos
 │   ├── base_game.py       # Clase base abstracta
-│   ├── snake_game.py      # Lógica completa de Snake
-│   └── tetris_game.py     # Lógica completa de Tetris
-├── specs/                  # Configuraciones .brik
-│   ├── snake.brik         # Config de Snake
-│   └── tetris.brik        # Config de Tetris
+│   ├── snake_game.py      # Lógica completa de Snake (con portales)
+│   └── tetris_game.py     # Lógica completa de Tetris (con bombas)
+├── specs/                  # Configuraciones .brik y compiladas
+│   ├── snake.brik         # Configuración de Snake (con comentarios)
+│   ├── snake.json         # Snake compilado a JSON
+│   ├── tetris.brik        # Configuración de Tetris (con comentarios)
+│   └── tetris.json        # Tetris compilado a JSON
+├── bnf/                    # Gramáticas formales BNF
+│   ├── snake.bnf          # Gramática BNF de Snake DSL
+│   └── tetris.bnf         # Gramática BNF de Tetris DSL
 ├── docs/                   # Documentación técnica
-│   ├── DSL_REFERENCE.md   # Referencia del lenguaje .brik
+│   ├── DSL_REFERENCE.md   # Referencia completa del lenguaje .brik
 │   └── API.md             # API del motor de juegos
 ├── screenshots/            # Capturas de pantalla
 ├── engine.py              # Motor gráfico principal (Tkinter)
-├── runtime.py             # Cargador de archivos .brik
+├── runtime.py             # Cargador de archivos .brik en tiempo de ejecución
+├── compiler.py            # Compilador .brik → .json
 ├── main.py                # Punto de entrada del programa
 ├── RUN_GAME.BAT           # Launcher para Windows
 ├── run.sh                 # Launcher para Linux/Mac
