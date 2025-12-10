@@ -72,8 +72,6 @@ class SnakeGame(BaseGame):
         self.color_snake = sym_str(symbols, 'board.colors.snake_body', '#00FF00')
         self.color_walls = sym_str(symbols, 'board.colors.walls', '#888888')
         self.color_apple = sym_str(symbols, 'board.colors.apple', '#FF0000')
-        self.color_portal = sym_str(symbols, "board.colors.portal", "#FFD700")
-
 
         # ------------------------------------------------------------------
         # Controles – vienen como strings tipo "right", "left", "p", "r"
@@ -170,9 +168,22 @@ class SnakeGame(BaseGame):
         # ------------------ Portales ------------------
         self.portals = {}
         self.portal_cells = set()
-
-        # Color del portal (ya deberías tener algo así):
-        self.color_portal = sym_str(symbols, "board.colors.portal", "#FFD700")
+        self.portal_colors = {}  # Mapea cada celda de portal a su color
+        self.portal_pairs = []   # Lista de pares [(a, b, color), ...]
+        
+        # Leer colores de portales desde el .brik
+        # Cada par usa el MISMO color para ambos portales (entrada y salida)
+        self.portal1_color = sym_str(symbols, "portals.portal1_color", "#9932CC")  # Morado por defecto
+        self.portal2_color = sym_str(symbols, "portals.portal2_color", "#FFD700")  # Amarillo por defecto
+        
+        # Lista de colores para los pares (se pueden extender en el .brik)
+        self.pair_colors = [
+            self.portal1_color,  # Portal par 1 - Color definido en .brik
+            self.portal2_color,  # Portal par 2 - Color definido en .brik
+            "#00CED1",           # Portal par 3 - Cian (extra si num_pairs > 2)
+            "#FF4500",           # Portal par 4 - Naranja (extra si num_pairs > 3)
+            "#32CD32",           # Portal par 5 - Verde lima (extra si num_pairs > 4)
+        ]
 
         # ¿Portales aleatorios o fijos del .brik?
         self.portal_random = sym_bool(symbols, "portals.random", False)
@@ -183,27 +194,40 @@ class SnakeGame(BaseGame):
             self._spawn_random_portals()
         else:
             # Usamos los fijos del .brik (tu estructura original)
+            pair_idx = 0
             p1_from = sym_get(symbols, "portals.p1_from", None)
             p1_to   = sym_get(symbols, "portals.p1_to",   None)
             if p1_from and p1_to:
                 a = self._clamp_to_play_area(p1_from[0], p1_from[1])
                 b = self._clamp_to_play_area(p1_to[0],   p1_to[1])
-
+                # Ambos portales del par usan el mismo color
+                color = self.pair_colors[pair_idx % len(self.pair_colors)]
+                
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
                 self.portal_cells.add(b)
+                self.portal_colors[a] = color
+                self.portal_colors[b] = color
+                self.portal_pairs.append((a, b, color))
+                pair_idx += 1
 
             p2_from = sym_get(symbols, "portals.p2_from", None)
             p2_to   = sym_get(symbols, "portals.p2_to",   None)
             if p2_from and p2_to:
                 a = self._clamp_to_play_area(p2_from[0], p2_from[1])
                 b = self._clamp_to_play_area(p2_to[0],   p2_to[1])
-
+                # Ambos portales del par usan el mismo color
+                color = self.pair_colors[pair_idx % len(self.pair_colors)]
+                
                 self.portals[a] = b
                 self.portals[b] = a
                 self.portal_cells.add(a)
                 self.portal_cells.add(b)
+                self.portal_colors[a] = color
+                self.portal_colors[b] = color
+                self.portal_pairs.append((a, b, color))
+                pair_idx += 1
 
         self._init_snake_and_food()
 
@@ -215,15 +239,19 @@ class SnakeGame(BaseGame):
     def _spawn_random_portals(self):
         """
         Crea pares de portales aleatorios, respetando walls.
-        Rellena self.portals y self.portal_cells.
+        Rellena self.portals, self.portal_cells, self.portal_colors y self.portal_pairs.
+        Los portales no aparecerán en los bordes (al menos 2 celdas de margen).
         """
 
         self.portals.clear()
         self.portal_cells.clear()
+        self.portal_colors.clear()
+        self.portal_pairs = []
 
         valid = []
-        for y in range(self.wall_min_y + 1, self.wall_max_y):
-            for x in range(self.wall_min_x + 1, self.wall_max_x):
+        # Restringir para que no queden en los bordes (dejar al menos 2 celdas de margen)
+        for y in range(self.wall_min_y + 2, self.wall_max_y - 1):
+            for x in range(self.wall_min_x + 2, self.wall_max_x - 1):
                 pos = (x, y)
                 if pos in self.walls:
                     continue
@@ -244,6 +272,9 @@ class SnakeGame(BaseGame):
         for i in range(num_pairs):
             a = chosen[2 * i]
             b = chosen[2 * i + 1]
+            
+            # Obtener color para este par (ambos portales mismo color)
+            color = self.pair_colors[i % len(self.pair_colors)]
 
             # mapa bidireccional
             self.portals[a] = b
@@ -251,6 +282,11 @@ class SnakeGame(BaseGame):
 
             self.portal_cells.add(a)
             self.portal_cells.add(b)
+            
+            self.portal_colors[a] = color
+            self.portal_colors[b] = color
+            
+            self.portal_pairs.append((a, b, color))
 
 
     # ======================================================================
@@ -505,9 +541,10 @@ class SnakeGame(BaseGame):
         for (x, y) in self.walls:
             engine.draw_brick(x, y, color=self.color_walls)
 
-        #portal
+        # Portales con colores individuales
         for (x, y) in self.portal_cells:
-            engine.draw_brick(x, y, color=self.color_portal)
+            color = self.portal_colors.get((x, y), "#FFD700")  # Fallback a dorado
+            engine.draw_brick(x, y, color=color)
 
         # Snake
         for (x, y) in self.snake:
@@ -539,6 +576,7 @@ class SnakeGame(BaseGame):
                 anchor="nw",
                 font=engine.font_label
             )
+
             engine.draw_text(
                 20, 100,
                 str(self.score),
@@ -546,15 +584,7 @@ class SnakeGame(BaseGame):
                 anchor="nw",
                 font=engine.font_value
             )
-
-            engine.draw_text(
-                20, 130,
-                "Tick actual: %d ms" % self.tick_ms,
-                where="info",
-                anchor="nw",
-                font=engine.font_hint
-            )
-
+            
             engine.draw_text(
                 20, 160,
                 "Manzanas comidas: %d" % self.apples_eaten,
@@ -563,18 +593,58 @@ class SnakeGame(BaseGame):
                 font=engine.font_hint
             )
 
-            engine.draw_hline(200, where="info")
+            engine.draw_hline(190, where="info")
+            
+            # Mostrar información de portales
+            if len(self.portal_pairs) > 0:
+                engine.draw_text(
+                    20, 210,
+                    "Portales:",
+                    where="info",
+                    anchor="nw",
+                    font=engine.font_label
+                )
+                
+                y_offset = 230
+                for idx, (a, b, color) in enumerate(self.portal_pairs):
+                    # Dibujar indicador de color para el par de portales
+                    if hasattr(engine.info_canvas, 'create_rectangle'):
+                        x_start = 20
+                        # Portal A
+                        engine.info_canvas.create_rectangle(
+                            x_start, y_offset, x_start + 15, y_offset + 15,
+                            fill=color, outline="white"
+                        )
+                        # Flecha bidireccional
+                        engine.info_canvas.create_text(
+                            x_start + 20, y_offset + 7,
+                            text="<->",
+                            fill="white",
+                            anchor="w",
+                            font=engine.font_hint
+                        )
+                        # Portal B (mismo color)
+                        engine.info_canvas.create_rectangle(
+                            x_start + 45, y_offset, x_start + 60, y_offset + 15,
+                            fill=color, outline="white"
+                        )
+                    y_offset += 20
+                
+                engine.draw_hline(y_offset + 10, where="info")
+            else:
+                # Si no hay portales, usar posición por defecto
+                y_offset = 200
 
             if self.game_over:
                 engine.draw_text(
-                    center_x, 230,
+                    center_x, y_offset + 40,
                     "GAME OVER",
                     where="info",
                     anchor="n",
                     font=engine.font_title
                 )
                 engine.draw_text(
-                    center_x, 260,
+                    center_x, y_offset + 70,
                     "Pulsa %s para reiniciar" % self.key_restart.upper(),
                     where="info",
                     anchor="n",
@@ -582,7 +652,7 @@ class SnakeGame(BaseGame):
                 )
             elif self.paused:
                 engine.draw_text(
-                    center_x, 230,
+                    center_x, y_offset + 40,
                     "PAUSA",
                     where="info",
                     anchor="n",

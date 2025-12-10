@@ -1,0 +1,161 @@
+# ============================================================================
+# Gramatica BNF para la Configuracion del Juego Snake (archivos .brik)
+# ============================================================================
+# Motor de Juegos Brick - Lenguaje Especifico de Dominio
+# Version: 1.0
+# Juego: Snake
+# Compatible con: Python 2.7, Windows XP, Tkinter
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Estructura General del Archivo
+# ----------------------------------------------------------------------------
+
+<archivo> ::= <encabezado>? <declaracion_juego>
+
+<encabezado> ::= "snake" "version" <numero>
+
+<declaracion_juego> ::= "game" <cadena> "{" <lista_secciones> "}"
+
+<lista_secciones> ::= <seccion>*
+
+<seccion> ::= <asignacion> | <subseccion>
+
+<asignacion> ::= <identificador> "=" <expresion> ";"
+
+<subseccion> ::= <identificador> "{" <lista_secciones> "}"
+
+# ----------------------------------------------------------------------------
+# Expresiones y Tipos de Datos
+# ----------------------------------------------------------------------------
+
+<expresion> ::= <numero>
+              | <cadena>
+              | <color>
+              | <booleano>
+              | <lista>
+              | <identificador>
+
+<lista> ::= "[" <lista_expresiones>? "]"
+
+<lista_expresiones> ::= <expresion> ("," <expresion>)*
+
+<booleano> ::= "true" | "false"
+
+<color> ::= "#" <digito_hex>{6}
+
+<numero> ::= <entero> | <decimal>
+
+<entero> ::= <digito>+
+
+<decimal> ::= <digito>+ "." <digito>+
+
+<cadena> ::= '"' <caracter>* '"'
+
+<identificador> ::= <letra> (<letra> | <digito> | "_")*
+
+<letra> ::= "a".."z" | "A".."Z"
+
+<digito> ::= "0".."9"
+
+<digito_hex> ::= "0".."9" | "a".."f" | "A".."F"
+
+<caracter> ::= <cualquier_caracter_excepto_comillas>
+
+# ============================================================================
+# Secciones Especificas del Juego Snake (Reglas Semanticas)
+# ============================================================================
+# Las siguientes secciones son esperadas en snake.brik:
+#
+# 1. board { ... }
+#    - width: <entero>                  // Ancho del tablero
+#    - height: <entero>                 // Alto del tablero
+#    - cell_size: <entero>              // Tamano de cada celda
+#    - wrap: <booleano>                 // false = paredes solidas
+#    - colors { ... }                   // Colores del juego
+#
+# 2. board.colors { ... }
+#    - background: <color>              // Fondo del tablero
+#    - grid: <color>                    // Lineas de la grilla
+#    - snake_body: <color>              // Color de la serpiente
+#    - walls: <color>                   // Color de las paredes
+#    - apple: <color>                   // Color de las manzanas
+#
+# 3. portals { ... }
+#    - random: <booleano>               // true = portales aleatorios
+#    - num_pairs: <entero>              // Cantidad de pares de portales (1-5)
+#    - portal1_color: <color>           // Color del par de portales 1 (ambos)
+#    - portal2_color: <color>           // Color del par de portales 2 (ambos)
+#    - p1_from: [<entero>, <entero>]    // Portal 1 - Posicion entrada
+#    - p1_to: [<entero>, <entero>]      // Portal 1 - Posicion salida
+#    - p2_from: [<entero>, <entero>]    // Portal 2 - Posicion entrada
+#    - p2_to: [<entero>, <entero>]      // Portal 2 - Posicion salida
+#
+# 4. controls { ... }
+#    - right_mov: <cadena>              // Tecla mover derecha
+#    - left_mov: <cadena>               // Tecla mover izquierda
+#    - down_mov: <cadena>               // Tecla mover abajo
+#    - up_mov: <cadena>                 // Tecla mover arriba
+#    - pause: <cadena>                  // Tecla pausar
+#    - restart: <cadena>                // Tecla reiniciar
+#
+# 5. snake { ... }
+#    - tick_ms: <entero>                // Velocidad de movimiento (ms)
+#    - initial_length: <entero>         // Longitud inicial
+#    - growth_per_apple: <entero>       // Crecimiento por manzana
+#    - spawn: <cadena>                  // Posicion de aparicion ("random")
+#
+# 6. level { ... }
+#    - grid: <matriz>                   // Matriz de obstaculos (0=libre, 1=pared)
+#                                       // Ejemplo: [[1,1,1],[1,0,1],[1,1,1]]
+#
+# 7. rules_end_game { ... }
+#    - on_out_of_bounds: <cadena>       // Accion al salir de limites ("end")
+#    - on_self_collision: <cadena>      // Accion al chocar consigo ("end")
+#    - on_wall_collision: <cadena>      // Accion al chocar con pared ("end")
+#
+# 8. rules_speed_progression { ... }
+#    - speedup_after_apple: <entero>    // Acelerar cada N manzanas
+#    - min_tick_ms: <entero>            // Velocidad maxima (ms minimo)
+#
+# 9. rules_spawning { ... }
+#    - apple_respawn_ticks: <entero>    // Ticks para reaparecer manzana
+#    - max_apples: <entero>             // Maximo de manzanas simultaneas
+#
+# 10. rules_scoring { ... }
+#     - apple_points: <entero>          // Puntos por cada manzana comida
+#
+# ============================================================================
+# Notas Importantes sobre Portales
+# ============================================================================
+# - Los portales conectan dos posiciones del tablero mediante teletransporte
+# - Cada par de portales usa el MISMO color para entrada y salida
+# - portal1_color y portal2_color son parametros FIJOS en el .brik
+# - Los portales NO aparecen en los bordes (margen de 2 celdas)
+# - Colores por defecto:
+#   * Portal 1: #9932CC (Morado)
+#   * Portal 2: #FFD700 (Amarillo/Dorado)
+# - Si num_pairs > 2, se usan colores adicionales predefinidos:
+#   * Portal 3: #00CED1 (Cian)
+#   * Portal 4: #FF4500 (Naranja)
+#   * Portal 5: #32CD32 (Verde lima)
+#
+# ============================================================================
+# Formato de la Grilla (Grid)
+# ============================================================================
+# - Matriz bidimensional de enteros (0 o 1)
+# - 1 representa una pared/obstaculo
+# - 0 representa espacio libre
+# - El borde externo se construye automaticamente
+# - Ejemplo:
+#   grid = [
+#     [1,1,1,1,1],
+#     [1,0,0,0,1],
+#     [1,0,1,0,1],
+#     [1,0,0,0,1],
+#     [1,1,1,1,1]
+#   ];
+#
+# ============================================================================
+# Fin de la Gramatica BNF de Snake
+# ============================================================================

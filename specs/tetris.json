@@ -1,0 +1,1293 @@
+{
+  "source_file": "tetris.brik",
+  "ast": {
+    "kind": "tetris",
+    "version": 1.0,
+    "name": "tetris",
+    "board": {
+      "width": 20,
+      "height": 24,
+      "colors": {
+        "background": "#000000",
+        "grid": "#000000",
+        "ghost": "#BBBBBB",
+        "walls": "#555555"
+      }
+    },
+    "ui": {
+      "next_queue_length": 3
+    },
+    "controls": {
+      "right_mov": "right",
+      "left_mov": "left",
+      "super_drop": "down",
+      "rotate": "up",
+      "pause": "p",
+      "restart": "r"
+    },
+    "pieces": {
+      "piece_I": {
+        "color": "#75E689",
+        "rotations": [
+          [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_O": {
+        "color": "#7599E6",
+        "rotations": [
+          [
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_T": {
+        "color": "#EB3B3B",
+        "rotations": [
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_J": {
+        "color": "#FFE824",
+        "rotations": [
+          [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_L": {
+        "color": "#BD24FF",
+        "rotations": [
+          [
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_S": {
+        "color": "#1D00FF",
+        "rotations": [
+          [
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_Z": {
+        "color": "#177A06",
+        "rotations": [
+          [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ]
+      },
+      "piece_bomb_1x1": {
+        "color": "#808080",
+        "rotations": [
+          [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "blast_radius": 1,
+        "is_bomb": true
+      },
+      "piece_bomb_2x2": {
+        "color": "#909090",
+        "rotations": [
+          [
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "blast_radius": 4,
+        "is_bomb": true
+      }
+    },
+    "available_pieces": [
+      "piece_I",
+      "piece_O",
+      "piece_T",
+      "piece_J",
+      "piece_L",
+      "piece_S",
+      "piece_Z",
+      "piece_bomb_1x1",
+      "piece_bomb_2x2"
+    ],
+    "rules_for_bomb": {
+      "bomb_1x1_blast": 3,
+      "bomb_2x2_blast": 4
+    },
+    "rules_random_pieces": {
+      "random_bombs": true,
+      "bomb_chance": 0.125
+    },
+    "rules_end_game": {
+      "game_over": "stack_reaches_top"
+    },
+    "rules_speed_levels": {
+      "speed_increase": true,
+      "level_up_each": 1000,
+      "speed_multiplier": 1.3
+    },
+    "rules_line_clear": {
+      "line_score": [
+        40,
+        100,
+        300,
+        1200
+      ],
+      "combo_bonus": 50,
+      "level_multiplier": 1.3
+    },
+    "tetris": {
+      "tick_ms": 650,
+      "gravity": 1,
+      "spawn": "top_center"
+    }
+  },
+  "symbols": {
+    "kind": "tetris",
+    "version": 1.0,
+    "name": "tetris",
+    "board.width": 20,
+    "board.height": 24,
+    "board.colors.background": "#000000",
+    "board.colors.grid": "#000000",
+    "board.colors.ghost": "#BBBBBB",
+    "board.colors.walls": "#555555",
+    "ui.next_queue_length": 3,
+    "controls.right_mov": "right",
+    "controls.left_mov": "left",
+    "controls.super_drop": "down",
+    "controls.rotate": "up",
+    "controls.pause": "p",
+    "controls.restart": "r",
+    "pieces.piece_I.color": "#75E689",
+    "pieces.piece_I.rotations": [
+      [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_O.color": "#7599E6",
+    "pieces.piece_O.rotations": [
+      [
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_T.color": "#EB3B3B",
+    "pieces.piece_T.rotations": [
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_J.color": "#FFE824",
+    "pieces.piece_J.rotations": [
+      [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_L.color": "#BD24FF",
+    "pieces.piece_L.rotations": [
+      [
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_S.color": "#1D00FF",
+    "pieces.piece_S.rotations": [
+      [
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_Z.color": "#177A06",
+    "pieces.piece_Z.rotations": [
+      [
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_bomb_1x1.color": "#808080",
+    "pieces.piece_bomb_1x1.rotations": [
+      [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_bomb_1x1.blast_radius": 1,
+    "pieces.piece_bomb_1x1.is_bomb": true,
+    "pieces.piece_bomb_2x2.color": "#909090",
+    "pieces.piece_bomb_2x2.rotations": [
+      [
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    ],
+    "pieces.piece_bomb_2x2.blast_radius": 4,
+    "pieces.piece_bomb_2x2.is_bomb": true,
+    "available_pieces": [
+      "piece_I",
+      "piece_O",
+      "piece_T",
+      "piece_J",
+      "piece_L",
+      "piece_S",
+      "piece_Z",
+      "piece_bomb_1x1",
+      "piece_bomb_2x2"
+    ],
+    "rules_for_bomb.bomb_1x1_blast": 3,
+    "rules_for_bomb.bomb_2x2_blast": 4,
+    "rules_random_pieces.random_bombs": true,
+    "rules_random_pieces.bomb_chance": 0.125,
+    "rules_end_game.game_over": "stack_reaches_top",
+    "rules_speed_levels.speed_increase": true,
+    "rules_speed_levels.level_up_each": 1000,
+    "rules_speed_levels.speed_multiplier": 1.3,
+    "rules_line_clear.line_score": [
+      40,
+      100,
+      300,
+      1200
+    ],
+    "rules_line_clear.combo_bonus": 50,
+    "rules_line_clear.level_multiplier": 1.3,
+    "tetris.tick_ms": 650,
+    "tetris.gravity": 1,
+    "tetris.spawn": "top_center"
+  }
+}

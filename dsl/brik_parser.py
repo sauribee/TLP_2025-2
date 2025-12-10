@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import lexer
+try:
+    # Intento import relativo (Python 2.7 desde fuera del módulo)
+    from dsl import lexer
+except ImportError:
+    # Fallback a import directo (Python 2.7 desde dentro del módulo)
+    import lexer
 
 class ParseError(Exception):
     def __init__(self, message, token):
