@@ -435,18 +435,67 @@ class TetrisGame(BaseGame):
     def _lock_piece(self):
         if self.current_piece is None:
             return
-        color = self.piece_colors.get(self.current_piece.kind, "#ffffff")
-        for cx, cy in self._piece_cells(self.current_piece):
-            if 0 <= cy < self.board_h and 0 <= cx < self.board_w:
-                self.board[cy][cx] = color
-        self.current_piece = None
+        
+        # Verificar si la pieza es una bomba
+        is_bomb = "bomb" in self.current_piece.kind.lower()
+        
+        if is_bomb:
+            # Calcular el centro de la bomba para la explosión
+            cells = self._piece_cells(self.current_piece)
+            if len(cells) > 0:
+                # Calcular centro promedio de las celdas de la bomba
+                center_x = sum(cx for cx, cy in cells) // len(cells)
+                center_y = sum(cy for cx, cy in cells) // len(cells)
+                
+                # Determinar el tamaño de la explosión según el tipo de bomba
+                if "1x1" in self.current_piece.kind:
+                    blast_size = 3  # Explota en área 3x3
+                elif "2x2" in self.current_piece.kind:
+                    blast_size = 4  # Explota en área 4x4
+                else:
+                    blast_size = 3  # Por defecto
+                
+                # Explotar el área centrada en la bomba
+                self._explode_bomb(center_x, center_y, blast_size)
+            
+            self.current_piece = None
+            self._spawn_new_piece()
+        else:
+            # Pieza normal: fijar al tablero
+            color = self.piece_colors.get(self.current_piece.kind, "#ffffff")
+            for cx, cy in self._piece_cells(self.current_piece):
+                if 0 <= cy < self.board_h and 0 <= cx < self.board_w:
+                    self.board[cy][cx] = color
+            self.current_piece = None
 
-        lines = self._clear_full_lines()
-        if lines > 0:
-            self._apply_scoring(lines)
-            self._update_level(lines)
+            lines = self._clear_full_lines()
+            if lines > 0:
+                self._apply_scoring(lines)
+                self._update_level(lines)
 
-        self._spawn_new_piece()
+            self._spawn_new_piece()
+    
+    def _explode_bomb(self, center_x, center_y, blast_size):
+        """
+        Explota una bomba borrando todas las celdas en un área cuadrada.
+        blast_size: tamaño del área de explosión (3 para 3x3, 4 para 4x4)
+        """
+        # Calcular el radio de explosión (cuántas celdas desde el centro)
+        radius = blast_size // 2
+        
+        # Borrar todas las celdas en el área de explosión
+        for dy in range(-radius, radius + (blast_size % 2)):
+            for dx in range(-radius, radius + (blast_size % 2)):
+                ex = center_x + dx
+                ey = center_y + dy
+                
+                # Verificar que esté dentro del tablero
+                if 0 < ex < self.board_w - 1 and 0 < ey < self.board_h - 1:
+                    # Borrar la celda (no tocar paredes)
+                    self.board[ey][ex] = None
+        
+        # Bonus de puntos por usar bomba
+        self.score += blast_size * 50
 
     def _clear_full_lines(self):
         new_board = []

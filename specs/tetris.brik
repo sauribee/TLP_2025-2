@@ -185,8 +185,8 @@ game "tetris" {
             ];
         }
     
-        piece_bomb {
-            color = "#F08418";
+        piece_bomb_1x1 {
+            color = "#808080";
             rotations = [
                 [
                     [1,0,0,0],
@@ -196,20 +196,34 @@ game "tetris" {
                 ]
             ];
             blast_radius = 1;
+            is_bomb = true;
+        }
+
+        piece_bomb_2x2 {
+            color = "#909090";
+            rotations = [
+                [
+                    [1,1,0,0],
+                    [1,1,0,0],
+                    [0,0,0,0],
+                    [0,0,0,0]
+                ]
+            ];
+            blast_radius = 2;
+            is_bomb = true;
         }
     }
 
-    available_pieces = [piece_I, piece_O, piece_T, piece_J, piece_L, piece_S, piece_Z, piece_bomb];
+    available_pieces = [piece_I, piece_O, piece_T, piece_J, piece_L, piece_S, piece_Z, piece_bomb_1x1, piece_bomb_2x2];
 
     rules_for_bomb {
-        blast_radius = 1;
-        time_to_detonate = 3;
-        color = "#F08418";
+        bomb_1x1_blast = 3;
+        bomb_2x2_blast = 4;
     }
 
     rules_random_pieces {
         random_bombs = true;
-        bomb_chance = 0.05;
+        bomb_chance = 0.08;
     }
 
     rules_end_game {

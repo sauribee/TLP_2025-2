@@ -1,0 +1,83 @@
+# ============================================================================
+# BNF Grammar for Snake Game Configuration (.brik files)
+# ============================================================================
+# Brick Game Engine - Domain Specific Language
+# Version: 1.0
+# Game: Snake
+# ============================================================================
+
+<file> ::= <header>? <game_declaration>
+
+<header> ::= "snake" "version" <number>
+
+<game_declaration> ::= "game" <string> "{" <section_list> "}"
+
+<section_list> ::= <section>*
+
+<section> ::= <assignment> | <subsection>
+
+<assignment> ::= <identifier> "=" <expression> ";"
+
+<subsection> ::= <identifier> "{" <section_list> "}"
+
+<expression> ::= <number>
+               | <string>
+               | <color>
+               | <boolean>
+               | <list>
+               | <identifier>
+
+<list> ::= "[" <expression_list>? "]"
+
+<expression_list> ::= <expression> ("," <expression>)*
+
+<boolean> ::= "true" | "false"
+
+<color> ::= "#" <hex_digit>{6}
+
+<number> ::= <integer> | <float>
+
+<integer> ::= <digit>+
+
+<float> ::= <digit>+ "." <digit>+
+
+<string> ::= '"' <char>* '"'
+
+<identifier> ::= <letter> (<letter> | <digit> | "_")*
+
+<letter> ::= "a".."z" | "A".."Z"
+
+<digit> ::= "0".."9"
+
+<hex_digit> ::= "0".."9" | "a".."f" | "A".."F"
+
+<char> ::= <any_character_except_quote>
+
+# ============================================================================
+# Specific Snake Game Sections (Semantic Rules)
+# ============================================================================
+# These are the expected section names for snake.brik:
+#
+# - board { width, height, colors { ... } }
+# - controls { up, down, left, right, pause, restart }
+# - snake { initial_length, tick_ms, growth_per_apple, spawn }
+# - portals { random, num_pairs, p1_from, p1_to, p2_from, p2_to }
+# - level { grid }
+# - rules_end_game { on_out_of_bounds, on_self_collision, on_wall_collision }
+# - rules_speed_progression { speedup_after_apple, min_tick_ms }
+# - rules_spawning { apple_respawn_ticks, max_apples }
+# - rules_scoring { apple_points }
+# ============================================================================
+
+# Expected color keys for board.colors:
+# - background, grid, snake_body, walls, apple, portal
+
+# Expected control keys:
+# - up_mov, down_mov, left_mov, right_mov, pause, restart
+
+# Grid format:
+# - Matrix of 0/1 where 1 represents walls
+
+# ============================================================================
+# End of Snake BNF Grammar
+# ============================================================================
