@@ -10,7 +10,7 @@ import symbols
 
 def main(argv):
     if not argv:
-        print("Uso: python2 brikc.py <archivo.brik> [--debug]")
+        print("Uso: python2 brik.py <archivo.brik> [--debug]")
         sys.exit(1)
 
     debug = False
@@ -24,11 +24,11 @@ def main(argv):
             path = arg
         else:
             print("Argumento no reconocido:", arg)
-            print("Uso: python2 brikc.py <archivo.brik> [--debug]")
+            print("Uso: python2 brik.py <archivo.brik> [--debug]")
             sys.exit(1)
 
     if path is None:
-        print("Uso: python2 brikc.py <archivo.brik> [--debug]")
+        print("Uso: python2 brik.py <archivo.brik> [--debug]")
         sys.exit(1)
 
     # Leemos el archivo

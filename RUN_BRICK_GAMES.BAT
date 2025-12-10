@@ -26,7 +26,7 @@ if not exist "%PYTHON%" (
 :menu
 cls
 echo ==========================================
-echo        BRICK GAME ENGINE - TLP 2025-2
+echo        BRICK GAMES ENGINE - TLP 2025-2
 echo ==========================================
 echo.
 echo  [1] Jugar SNAKE
