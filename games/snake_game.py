@@ -628,17 +628,20 @@ class SnakeGame(BaseGame):
                     y_offset += 20
                 
                 engine.draw_hline(y_offset + 10, where="info")
+            else:
+                # Si no hay portales, usar posición por defecto
+                y_offset = 200
 
             if self.game_over:
                 engine.draw_text(
-                    center_x, y_offset + 30,
+                    center_x, y_offset + 40,
                     "GAME OVER",
                     where="info",
                     anchor="n",
                     font=engine.font_title
                 )
                 engine.draw_text(
-                    center_x, 260,
+                    center_x, y_offset + 70,
                     "Pulsa %s para reiniciar" % self.key_restart.upper(),
                     where="info",
                     anchor="n",
@@ -646,7 +649,7 @@ class SnakeGame(BaseGame):
                 )
             elif self.paused:
                 engine.draw_text(
-                    center_x, 230,
+                    center_x, y_offset + 40,
                     "PAUSA",
                     where="info",
                     anchor="n",

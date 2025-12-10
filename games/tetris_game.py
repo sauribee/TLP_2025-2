@@ -55,7 +55,7 @@ from __future__ import print_function
 import random
 
 from games.base_game import BaseGame
-from runtime import sym_int, sym_str, sym_bool, sym_get
+from runtime import sym_int, sym_str, sym_bool, sym_float, sym_get
 
 
 # Definición de tetrominós (Tetris "clásico" simplificado).
@@ -171,7 +171,21 @@ class TetrisGame(BaseGame):
 
         # Cargar formas y colores de pieces.piece_X.* en el .brik
         self.piece_shapes, self.piece_colors = self._load_pieces_from_symbols(symbols)
+        
+        # Separar piezas normales de bombas
+        self.normal_pieces = []
+        self.bomb_pieces = []
+        for kind in sorted(self.piece_shapes.keys()):
+            if 'bomb' in kind.lower():
+                self.bomb_pieces.append(kind)
+            else:
+                self.normal_pieces.append(kind)
+        
         self.piece_kinds = sorted(self.piece_shapes.keys())
+        
+        # Configuración de bombas aleatorias
+        self.random_bombs = sym_bool(symbols, "rules_random_pieces.random_bombs", False)
+        self.bomb_chance = sym_float(symbols, "rules_random_pieces.bomb_chance", 0.05)
 
         # Estado del juego
         self.board = self._make_empty_board()
@@ -237,7 +251,9 @@ class TetrisGame(BaseGame):
         piece_colors = {}
 
         # Sufijos estándar: I, O, T, S, Z, J, L
-        for suffix in ["I", "O", "T", "S", "Z", "J", "L"]:
+        standard_pieces = ["I", "O", "T", "S", "Z", "J", "L"]
+        
+        for suffix in standard_pieces:
             base = "pieces.piece_%s" % suffix
 
             # Color: pieces.piece_I.color
@@ -277,6 +293,33 @@ class TetrisGame(BaseGame):
 
             piece_shapes[suffix] = rotations_cells
             piece_colors[suffix] = color
+        
+        # Cargar piezas de bomba (bomb_1x1, bomb_2x2, etc.)
+        bomb_suffixes = ["bomb_1x1", "bomb_2x2"]
+        for suffix in bomb_suffixes:
+            base = "pieces.piece_%s" % suffix
+            
+            # Verificar si existe en símbolos
+            color_key = base + ".color"
+            color = sym_str(symbols, color_key, None)
+            
+            if color is not None:  # Solo cargar si está definida
+                rot_key = base + ".rotations"
+                mats = sym_get(symbols, rot_key, None)
+                
+                rotations_cells = []
+                if mats is not None:
+                    for mat in mats:
+                        cells = []
+                        for y, row in enumerate(mat):
+                            for x, val in enumerate(row):
+                                if val:
+                                    cells.append((x, y))
+                        rotations_cells.append(cells)
+                
+                if rotations_cells:
+                    piece_shapes[suffix] = rotations_cells
+                    piece_colors[suffix] = color
 
         return piece_shapes, piece_colors
 
@@ -322,7 +365,29 @@ class TetrisGame(BaseGame):
         # self._spawn_new_piece()
 
     def _random_piece_kind(self):
-        return self._rng.choice(self.piece_kinds)
+        """
+        Selecciona una pieza aleatoria.
+        Si random_bombs está activo y hay bombas disponibles,
+        usa bomb_chance para decidir si devolver una bomba.
+        """
+        # Si no hay bombas configuradas o random_bombs está desactivado
+        if not self.random_bombs or not self.bomb_pieces:
+            # Solo piezas normales
+            if self.normal_pieces:
+                return self._rng.choice(self.normal_pieces)
+            else:
+                return self._rng.choice(self.piece_kinds)
+        
+        # Decidir si spawnear bomba o pieza normal
+        if self._rng.random() < self.bomb_chance:
+            # Spawnear bomba
+            return self._rng.choice(self.bomb_pieces)
+        else:
+            # Spawnear pieza normal
+            if self.normal_pieces:
+                return self._rng.choice(self.normal_pieces)
+            else:
+                return self._rng.choice(self.piece_kinds)
     
     def _draw_preview_piece(self, engine, kind, top_y_px):
         """
@@ -744,14 +809,14 @@ class TetrisGame(BaseGame):
 
             if self.game_over:
                 engine.draw_text(
-                    center_x, 250,
+                    center_x, 420,
                     "GAME OVER",
                     where="info",
                     anchor="n",
                     font=engine.font_title
                 )
                 engine.draw_text(
-                    center_x, 280,
+                    center_x, 450,
                     "Pulsa %s para reiniciar" % self.key_restart.upper(),
                     where="info",
                     anchor="n",
@@ -759,7 +824,7 @@ class TetrisGame(BaseGame):
                 )
             elif self.paused:
                 engine.draw_text(
-                    center_x, 250,
+                    center_x, 420,
                     "PAUSA",
                     where="info",
                     anchor="n",

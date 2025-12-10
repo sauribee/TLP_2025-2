@@ -223,7 +223,7 @@ game "tetris" {
 
     rules_random_pieces {
         random_bombs = true;
-        bomb_chance = 0.08;
+        bomb_chance = 0.5;
     }
 
     rules_end_game {
