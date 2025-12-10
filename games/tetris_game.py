@@ -1,4 +1,55 @@
 # -*- coding: utf-8 -*-
+"""
+==========================================
+TETRIS GAME - Brick Game Engine
+==========================================
+
+Implementación completa del juego Tetris con:
+- 7 piezas clásicas + pieza bomba especial
+- Sistema de rotación con 4 estados por pieza
+- Preview de próximas piezas (next queue)
+- Ghost piece (proyección de caída)
+- Sistema de combos y multiplicadores
+- Aumento progresivo de velocidad
+- Line clearing con puntuación avanzada
+
+TABLA DE CONTENIDOS:
+    1. Constantes y shapes de piezas (líneas 1-100)
+        - TETROMINO_SHAPES: Definiciones de todas las piezas
+    2. TetrisGame.__init__ (líneas 100-200)
+        - Lectura de configuración del .brik
+        - Colores y controles
+        - Parámetros del juego
+        - Estado inicial
+    3. Gestión de piezas (líneas 200-350)
+        - load_pieces_from_brik() - Carga desde .brik
+        - spawn_piece() - Genera nueva pieza
+        - get_next_piece_type() - Sistema de cola
+    4. Lógica de movimiento (líneas 350-450)
+        - rotate_piece() - Rotación con wall kicks
+        - move_piece() - Movimiento lateral
+        - apply_gravity() - Caída automática
+        - drop_piece() - Drop instantáneo
+    5. Colisiones y validación (líneas 450-500)
+        - is_valid_position() - Detecta colisiones
+        - lock_piece() - Fija pieza al tablero
+    6. Sistema de líneas (líneas 500-550)
+        - check_and_clear_lines() - Detección
+        - calculate_score() - Puntuación con combos
+    7. Sistema de bomba (líneas 550-600)
+        - explode_bomb() - Explosión y blast radius
+        - update_bomb_timers() - Contador de detonación
+    8. Input y actualización (líneas 600-650)
+        - on_key() - Manejo de teclas
+        - update() - Game loop principal
+    9. Rendering (líneas 650-668)
+        - draw() - Dibuja todo el juego
+        - draw_ghost_piece() - Proyección
+        - draw_next_queue() - Preview piezas
+        - draw_ui() - Panel de información
+
+==========================================
+"""
 from __future__ import print_function
 
 import random

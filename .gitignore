@@ -1,0 +1,35 @@
+# Archivos compilados de Python
+*.pyc
+*.pyo
+__pycache__/
+*.so
+
+# Configuración de VS Code
+.vscode/
+*.code-workspace
+
+# Configuración de IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.bak
+*.log
+
+# Entornos virtuales (por si se migra a Python 3)
+venv/
+env/
+ENV/
+
+# Distribución / empaquetado
+dist/
+build/
+*.egg-info/

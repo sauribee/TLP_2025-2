@@ -1,4 +1,46 @@
 # -*- coding: utf-8 -*-
+"""
+==========================================
+SNAKE GAME - Brick Game Engine
+==========================================
+
+Implementación completa del juego Snake con:
+- Portales de teletransporte (aleatorios o fijos)
+- Sistema de aceleración progresiva
+- Configuración completa vía snake.brik
+- Sistema de colisiones configurable
+- Spawn de manzanas con respawn automático
+
+TABLA DE CONTENIDOS:
+    1. Imports y constantes (líneas 1-10)
+    2. SnakeGame.__init__ (líneas 30-150)
+        - Lectura de parámetros del tablero
+        - Configuración de controles
+        - Parámetros del snake
+        - Sistema de portales
+        - Reglas del juego
+        - Estado inicial
+    3. Métodos de estado del juego (líneas 150-250)
+        - reset_game()
+        - is_game_over()
+    4. Sistema de portales (líneas 250-300)
+        - generate_random_portals()
+        - find_portal_exit()
+    5. Sistema de spawning (líneas 300-400)
+        - spawn_snake()
+        - spawn_apple()
+    6. Lógica del juego (líneas 400-500)
+        - on_key() - Manejo de input
+        - update() - Game loop principal
+        - move_snake() - Movimiento
+        - check_collisions() - Detección de colisiones
+    7. Rendering (líneas 500-549)
+        - draw() - Dibuja todo el juego
+        - draw_board()
+        - draw_ui()
+
+==========================================
+"""
 from __future__ import print_function
 
 import random
