@@ -22,7 +22,7 @@ class Parser(object):
         self.pos = 0
         self.current = tokens[0]
 
-    # ---------- utilidades básicas ----------
+    # ---------- Utilidades básicas ----------
 
     def _advance(self):
         tok = self.current
@@ -53,7 +53,7 @@ class Parser(object):
             return self.tokens[idx].type
         return 'EOF'
 
-    # ---------- entrada principal ----------
+    # ---------- Entrada principal ----------
 
     def parse_file(self):
         """
@@ -62,20 +62,20 @@ class Parser(object):
         """
         result = {}
 
-        # header opcional: e.g. "snake version 1.0"
+        # Cabecera opcional: ej. "snake version 1.0"
         if (self.current.type == 'IDENT' and
             self._peek_type(1) == 'IDENT' and
             self._peek_type(2) == 'NUMBER'):
             kind_tok = self._advance()      # snake / tetris
             ver_kw  = self._advance()       # version
             ver_tok = self._advance()       # 1.0
-            # si quieres ser estricto:
+            # Si quieres ser estricto:
             # if ver_kw.value != 'version':
             #     raise ParseError("Expected 'version' keyword", ver_kw)
             result['kind'] = kind_tok.value
             result['version'] = self._convert_number(ver_tok.value)
 
-        # game "name" { ... }
+        # game "nombre" { ... }
         self._expect_ident('game')
         name_tok = self._expect('STRING')
         result['name'] = name_tok.value
@@ -86,7 +86,7 @@ class Parser(object):
         self._expect('EOF')
         return result
 
-    # ---------- secciones y sentencias ----------
+    # ---------- Secciones y sentencias ----------
 
     def _parse_section_body(self, container):
         """
@@ -101,14 +101,14 @@ class Parser(object):
             name = name_tok.value
 
             if self.current.type == '=':
-                # assignment
+                # Asignación
                 self._advance()
                 value = self._parse_expr()
                 self._expect(';')
                 container[name] = value
 
             elif self.current.type == '{':
-                # subsection
+                # Subsección
                 self._advance()
                 sub = {}
                 self._parse_section_body(sub)
@@ -118,7 +118,7 @@ class Parser(object):
             else:
                 raise ParseError('Expected "=" or "{" after identifier', self.current)
 
-    # ---------- expresiones ----------
+    # ---------- Expresiones ----------
 
     def _parse_expr(self):
         """
@@ -140,14 +140,14 @@ class Parser(object):
             return tok.value
 
         if tok.type == 'IDENT':
-            # booleanos simples
+            # Booleanos simples
             if tok.value == 'true':
                 self._advance()
                 return True
             if tok.value == 'false':
                 self._advance()
                 return False
-            # otros identificadores como valores simples (por ahora string)
+            # Otros identificadores como valores simples (por ahora cadenas)
             self._advance()
             return tok.value
 
@@ -180,7 +180,7 @@ class Parser(object):
             return text
 
 
-# ---------- funciones de conveniencia ----------
+# ---------- Funciones de conveniencia ----------
 
 def parse_text(text):
     tokens = lexer.tokenize(text)

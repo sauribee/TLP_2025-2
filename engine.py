@@ -238,7 +238,7 @@ class GameEngine(object):
 # ----------------------------------------------------------------------
 # Demo mínima de Entrega 2:
 #   - Un ladrillo que se mueve con las flechas
-#   - Panel de info a la derecha con título, puntaje, fecha/hora, etc.
+#   - Panel de info a la derecha con título, puntaje, etc.
 # ----------------------------------------------------------------------
 
 class MovingBrickDemo(object):
@@ -258,11 +258,11 @@ class MovingBrickDemo(object):
         self.y = engine.grid_height // 2
 
         self.color = "#00ff00"  # Verde
-        self.move_count = 0     # Para el "puntaje" y stats
+        self.move_count = 0     # Para el puntaje y estadísticas
 
     def on_key(self, keysym):
         """
-        keysym: string como 'Left', 'Right', 'Up', 'Down', 'space', etc.
+        keysym: cadena de texto como 'Left', 'Right', 'Up', 'Down', 'space', etc.
         """
         moved = False
 
@@ -365,7 +365,7 @@ class MovingBrickDemo(object):
 
             engine.draw_hline(200, where="info")
 
-            # Info técnica del motor (queda muy "docente" pero útil)
+            # Información técnica del motor (útil para propósitos educativos)
             engine.draw_text(
                 20, 220,
                 "Tick: %d ms" % engine.tick_ms,
@@ -382,7 +382,7 @@ class MovingBrickDemo(object):
             )
 
 # ----------------------------------------------------------------------
-# Punto de entrada: corre la demo si ejecutas este archivo directamente
+# Punto de entrada: ejecuta la demo si se ejecuta este archivo directamente
 # ----------------------------------------------------------------------
 
 if __name__ == "__main__":

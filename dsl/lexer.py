@@ -6,9 +6,9 @@ class Token(object):
 
     def __init__(self, t, v, line, col):
         self.type = t      # 'IDENT', 'NUMBER', 'STRING', 'COLOR', '{', '}', '[', ']', '=', ';', ',', 'EOF'
-        self.value = v     # texto original (sin comillas para STRING)
-        self.line = line   # número de línea (1-based)
-        self.col = col     # número de columna (1-based)
+        self.value = v     # Texto original (sin comillas para STRING)
+        self.line = line   # Número de línea (comienza en 1)
+        self.col = col     # Número de columna (comienza en 1)
 
     def __repr__(self):
         return "Token(%r, %r, %d, %d)" % (self.type, self.value, self.line, self.col)
@@ -77,7 +77,7 @@ def tokenize(text):
                 col += 1
             if i >= n:
                 raise LexError("Unterminated string at line %d" % line)
-            value = text[start:i]   # sin las comillas
+            value = text[start:i]   # Sin las comillas
             i += 1
             col += 1
             tokens.append(Token('STRING', value, line, start_col))
@@ -92,7 +92,7 @@ def tokenize(text):
                 j += 1
             if j == i + 1:
                 raise LexError("Invalid color literal at line %d, col %d" % (line, col))
-            value = text[i:j]  # incluye el '#'
+            value = text[i:j]  # Incluye el '#'
             tokens.append(Token('COLOR', value, line, start_col))
             col += (j - i)
             i = j
