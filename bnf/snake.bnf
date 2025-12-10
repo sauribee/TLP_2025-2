@@ -80,7 +80,6 @@
 #    - snake_body: <color>              // Color de la serpiente
 #    - walls: <color>                   // Color de las paredes
 #    - apple: <color>                   // Color de las manzanas
-#    - portal: <color>                  // Color base de portales (se sobrescribe)
 #
 # 3. portals { ... }
 #    - random: <booleano>               // true = portales aleatorios

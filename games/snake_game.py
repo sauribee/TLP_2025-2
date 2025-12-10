@@ -72,8 +72,6 @@ class SnakeGame(BaseGame):
         self.color_snake = sym_str(symbols, 'board.colors.snake_body', '#00FF00')
         self.color_walls = sym_str(symbols, 'board.colors.walls', '#888888')
         self.color_apple = sym_str(symbols, 'board.colors.apple', '#FF0000')
-        self.color_portal = sym_str(symbols, "board.colors.portal", "#FFD700")
-
 
         # ------------------------------------------------------------------
         # Controles – vienen como strings tipo "right", "left", "p", "r"
