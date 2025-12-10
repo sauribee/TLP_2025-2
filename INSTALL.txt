@@ -1,5 +1,5 @@
 =============================================================
-    Brick Game Engine: Requisitos de Instalacion y Ejecucion
+  Brick Game Engine: Requisitos de Instalacion y Ejecucion
 =============================================================
 
 Este documento describe el software necesario y los pasos para instalar

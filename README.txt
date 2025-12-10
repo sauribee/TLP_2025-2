@@ -1,5 +1,5 @@
 =============================================================
-    PROYECTO: Brick Game Engine - TLP_2025-2
+   PROYECTO PRACTICO: Brick Game Engine - TLP_2025-2
 =============================================================
 
 Brick Game Engine es un motor de juegos retro estilo Game Boy desarrollado

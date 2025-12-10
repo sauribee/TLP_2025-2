@@ -23,7 +23,7 @@ def load_symbols_from_brik(path):
 
     # Ya NO leemos el archivo aquí; eso lo hace parse_file internamente.
     try:
-        ast = parse_file(path)   # ✅ aquí va la RUTA, no el texto
+        ast = parse_file(path)   # aquí va la RUTA, no el texto
     except Exception as e:
         raise BrikError("Error de parseo en %s: %s" % (path, e))
 
