@@ -21,6 +21,8 @@
     "portals": {
       "random": true,
       "num_pairs": 2,
+      "portal1_color": "#9932CC",
+      "portal2_color": "#FFD700",
       "p1_from": [
         3,
         10
@@ -209,6 +211,8 @@
     "board.colors.portal": "#FFD700",
     "portals.random": true,
     "portals.num_pairs": 2,
+    "portals.portal1_color": "#9932CC",
+    "portals.portal2_color": "#FFD700",
     "portals.p1_from": [
       3,
       10

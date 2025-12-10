@@ -171,16 +171,20 @@ class SnakeGame(BaseGame):
         self.portals = {}
         self.portal_cells = set()
         self.portal_colors = {}  # Mapea cada celda de portal a su color
-        self.portal_pairs = []   # Lista de pares [(a, b, color_a, color_b), ...]
+        self.portal_pairs = []   # Lista de pares [(a, b, color), ...]
         
-        # Colores predefinidos para pares de portales
+        # Leer colores de portales desde el .brik
         # Cada par usa el MISMO color para ambos portales (entrada y salida)
+        self.portal1_color = sym_str(symbols, "portals.portal1_color", "#9932CC")  # Morado por defecto
+        self.portal2_color = sym_str(symbols, "portals.portal2_color", "#FFD700")  # Amarillo por defecto
+        
+        # Lista de colores para los pares (se pueden extender en el .brik)
         self.pair_colors = [
-            "#9932CC",  # Morado (par 1)
-            "#FFD700",  # Amarillo/Dorado (par 2)
-            "#00CED1",  # Cian (par 3)
-            "#FF4500",  # Naranja (par 4)
-            "#32CD32",  # Verde lima (par 5)
+            self.portal1_color,  # Portal par 1 - Color definido en .brik
+            self.portal2_color,  # Portal par 2 - Color definido en .brik
+            "#00CED1",           # Portal par 3 - Cian (extra si num_pairs > 2)
+            "#FF4500",           # Portal par 4 - Naranja (extra si num_pairs > 3)
+            "#32CD32",           # Portal par 5 - Verde lima (extra si num_pairs > 4)
         ]
 
         # ¿Portales aleatorios o fijos del .brik?

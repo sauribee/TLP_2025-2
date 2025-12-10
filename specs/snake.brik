@@ -4,7 +4,6 @@ snake version 1.0
 // Configuración del juego Snake
 // ============================================================================
 // Este archivo define todas las reglas, portales y comportamientos del Snake
-// Compatible con Python 2.7 y el motor Brick Game Engine
 
 game "snake" {
 
@@ -12,18 +11,18 @@ game "snake" {
     // Tablero de juego
     // ------------------------------------------------------------------------
     board {
-        width = 20;       // Ancho del tablero (incluye paredes)
-        height = 24;      // Alto del tablero (incluye paredes)
+        width = 20;       // Ancho del tablero 
+        height = 24;      // Alto del tablero 
         cell_size = 20;   // Tamaño de cada celda del tablero
         wrap = false;     // false = paredes sólidas, true = wrap around
 
         colors {
             background = #FFFFFF;  // Blanco - Fondo del tablero
-            walls      = #555555;  // Gris oscuro - Paredes del tablero
+            walls = #555555;       // Gris oscuro - Paredes del tablero
             snake_body = #2C8D3E;  // Verde - Cuerpo de la serpiente
-            apple      = #F74848;  // Rojo - Manzanas
-            grid       = #CCCCCC;  // Gris claro - Líneas de la grilla
-            portal     = #FFD700;  // Dorado - Portales (color base, se sobrescribe)
+            apple = #F74848;       // Rojo - Manzanas
+            grid = #CCCCCC;        // Gris claro - Líneas de la grilla
+            portal = #FFD700;      // Dorado - Portales 
         }
     }
 
@@ -31,14 +30,15 @@ game "snake" {
     // Sistema de portales de teletransporte
     // ------------------------------------------------------------------------
     // Los portales conectan dos posiciones del tablero
-    // Cada par usa el MISMO color para ambos portales (entrada y salida)
-    // Colores por par: Morado (#9932CC), Amarillo (#FFD700), Cian (#00CED1)
+    // Cada par usa el mismo color para ambos portales (entrada y salida)
     // ------------------------------------------------------------------------
     portals {
-        random = true;   // true = genera portales aleatorios
-                        // false = usa posiciones fijas (p1_*, p2_*)
-        
-        num_pairs = 2;  // Cantidad de pares de portales (máximo 5)
+        random = true;   
+        num_pairs = 2;  
+
+        // Colores fijos para cada par de portales
+        portal1_color = #9932CC;  // Morado - Color del par de portales 1
+        portal2_color = #FFD700;  // Amarillo/Dorado - Color del par de portales 2
 
         // Posiciones fijas (solo se usan si random = false)
         p1_from = [3, 10];   // Portal 1 - Entrada
@@ -54,11 +54,11 @@ game "snake" {
     // ------------------------------------------------------------------------
     controls {
         right_mov = "right";  // Mover serpiente a la derecha
-        left_mov  = "left";   // Mover serpiente a la izquierda
-        down_mov  = "down";   // Mover serpiente abajo
-        up_mov    = "up";     // Mover serpiente arriba
-        pause     = "p";      // Pausar juego
-        restart   = "r";      // Reiniciar juego
+        left_mov = "left";   // Mover serpiente a la izquierda
+        down_mov = "down";   // Mover serpiente abajo
+        up_mov = "up";     // Mover serpiente arriba
+        pause = "p";      // Pausar juego
+        restart = "r";      // Reiniciar juego
     }
 
     // ------------------------------------------------------------------------

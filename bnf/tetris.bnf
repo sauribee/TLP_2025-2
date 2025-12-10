@@ -1,105 +1,219 @@
 # ============================================================================
-# BNF Grammar for Tetris Game Configuration (.brik files)
+# Gramatica BNF para la Configuracion del Juego Tetris (archivos .brik)
 # ============================================================================
-# Brick Game Engine - Domain Specific Language
+# Motor de Juegos Brick - Lenguaje Especifico de Dominio
 # Version: 1.0
-# Game: Tetris
+# Juego: Tetris
+# Compatible con: Python 2.7, Windows XP, Tkinter
 # ============================================================================
 
-<file> ::= <header>? <game_declaration>
+# ----------------------------------------------------------------------------
+# Estructura General del Archivo
+# ----------------------------------------------------------------------------
 
-<header> ::= "tetris" "version" <number>
+<archivo> ::= <encabezado>? <declaracion_juego>
 
-<game_declaration> ::= "game" <string> "{" <section_list> "}"
+<encabezado> ::= "tetris" "version" <numero>
 
-<section_list> ::= <section>*
+<declaracion_juego> ::= "game" <cadena> "{" <lista_secciones> "}"
 
-<section> ::= <assignment> | <subsection>
+<lista_secciones> ::= <seccion>*
 
-<assignment> ::= <identifier> "=" <expression> ";"
+<seccion> ::= <asignacion> | <subseccion>
 
-<subsection> ::= <identifier> "{" <section_list> "}"
+<asignacion> ::= <identificador> "=" <expresion> ";"
 
-<expression> ::= <number>
-               | <string>
-               | <color>
-               | <boolean>
-               | <list>
-               | <identifier>
+<subseccion> ::= <identificador> "{" <lista_secciones> "}"
 
-<list> ::= "[" <expression_list>? "]"
+# ----------------------------------------------------------------------------
+# Expresiones y Tipos de Datos
+# ----------------------------------------------------------------------------
 
-<expression_list> ::= <expression> ("," <expression>)*
+<expresion> ::= <numero>
+              | <cadena>
+              | <color>
+              | <booleano>
+              | <lista>
+              | <matriz>
+              | <identificador>
 
-<boolean> ::= "true" | "false"
+<lista> ::= "[" <lista_expresiones>? "]"
 
-<color> ::= "#" <hex_digit>{6}
+<lista_expresiones> ::= <expresion> ("," <expresion>)*
 
-<number> ::= <integer> | <float>
+<matriz> ::= "[" <lista_matrices>? "]"
 
-<integer> ::= <digit>+
+<lista_matrices> ::= <lista> ("," <lista>)*
 
-<float> ::= <digit>+ "." <digit>+
+<booleano> ::= "true" | "false"
 
-<string> ::= '"' <char>* '"'
+<color> ::= "#" <digito_hex>{6}
 
-<identifier> ::= <letter> (<letter> | <digit> | "_")*
+<numero> ::= <entero> | <decimal>
 
-<letter> ::= "a".."z" | "A".."Z"
+<entero> ::= <digito>+
 
-<digit> ::= "0".."9"
+<decimal> ::= <digito>+ "." <digito>+
 
-<hex_digit> ::= "0".."9" | "a".."f" | "A".."F"
+<cadena> ::= '"' <caracter>* '"'
 
-<char> ::= <any_character_except_quote>
+<identificador> ::= <letra> (<letra> | <digito> | "_")*
+
+<letra> ::= "a".."z" | "A".."Z"
+
+<digito> ::= "0".."9"
+
+<digito_hex> ::= "0".."9" | "a".."f" | "A".."F"
+
+<caracter> ::= <cualquier_caracter_excepto_comillas>
 
 # ============================================================================
-# Specific Tetris Game Sections (Semantic Rules)
+# Secciones Especificas del Juego Tetris (Reglas Semanticas)
 # ============================================================================
-# These are the expected section names for tetris.brik:
+# Las siguientes secciones son esperadas en tetris.brik:
 #
-# - board { width, height, colors { background, grid, ghost, walls } }
-# - ui { next_queue_length }
-# - controls { right_mov, left_mov, super_drop, rotate, pause, restart }
-# - pieces { piece_I { ... }, piece_O { ... }, ..., piece_bomb_1x1 { ... }, piece_bomb_2x2 { ... } }
-# - available_pieces (lista de piezas disponibles)
-# - rules_for_bomb { bomb_1x1_blast, bomb_2x2_blast }
-# - rules_random_pieces { random_bombs, bomb_chance }
-# - rules_end_game { game_over }
-# - rules_speed_levels { speed_increase, level_up_each, speed_multiplier }
-# - rules_line_clear { line_score, combo_bonus, level_multiplier }
-# - tetris { tick_ms, gravity, spawn }
+# 1. board { ... }
+#    - width: <entero>                  // Ancho del tablero (incluye paredes)
+#    - height: <entero>                 // Alto del tablero (incluye paredes)
+#    - colors { ... }                   // Colores del juego
+#
+# 2. board.colors { ... }
+#    - background: <color>              // Fondo del tablero
+#    - grid: <color>                    // Lineas de la grilla
+#    - ghost: <color>                   // Pieza fantasma (preview de caida)
+#    - walls: <color>                   // Paredes del tablero
+#
+# 3. ui { ... }
+#    - next_queue_length: <entero>      // Cantidad de piezas siguientes a mostrar
+#
+# 4. controls { ... }
+#    - right_mov: <cadena>              // Tecla mover pieza a la derecha
+#    - left_mov: <cadena>               // Tecla mover pieza a la izquierda
+#    - super_drop: <cadena>             // Tecla caida rapida (soft drop)
+#    - rotate: <cadena>                 // Tecla rotar pieza
+#    - pause: <cadena>                  // Tecla pausar
+#    - restart: <cadena>                // Tecla reiniciar
+#
+# 5. pieces { ... }
+#    Contiene definiciones de todas las piezas:
+#    - piece_I { ... }                  // Pieza linea (4 bloques)
+#    - piece_O { ... }                  // Pieza cuadrado (2x2)
+#    - piece_T { ... }                  // Pieza forma T
+#    - piece_J { ... }                  // Pieza forma J
+#    - piece_L { ... }                  // Pieza forma L
+#    - piece_S { ... }                  // Pieza forma S
+#    - piece_Z { ... }                  // Pieza forma Z
+#    - piece_bomb_1x1 { ... }           // Bomba 1x1 (ESPECIAL)
+#    - piece_bomb_2x2 { ... }           // Bomba 2x2 (ESPECIAL)
+#
+# 6. Estructura de cada pieza:
+#    piece_<nombre> {
+#        color: <color>                 // Color de la pieza (hex)
+#        rotations: <matriz3d>          // Lista de matrices 4x4 (rotaciones)
+#        blast_radius: <entero>         // (SOLO BOMBAS) Radio de explosion
+#        is_bomb: <booleano>            // (SOLO BOMBAS) Marca como bomba
+#    }
+#
+# 7. available_pieces = [...]
+#    Lista de identificadores de piezas disponibles en el juego
+#    Ejemplo: [piece_I, piece_O, piece_T, piece_bomb_1x1, piece_bomb_2x2]
+#
+# 8. rules_for_bomb { ... }
+#    - bomb_1x1_blast: <entero>         // Area de explosion 3x3
+#    - bomb_2x2_blast: <entero>         // Area de explosion 4x4
+#
+# 9. rules_random_pieces { ... }
+#    - random_bombs: <booleano>         // Permitir bombas aleatorias
+#    - bomb_chance: <decimal>           // Probabilidad de bomba (0.0-1.0)
+#                                       // Ejemplo: 0.125 = 12.5% = 1 en 8 piezas
+#
+# 10. rules_end_game { ... }
+#     - game_over: <cadena>             // Condicion de fin ("stack_reaches_top")
+#
+# 11. rules_speed_levels { ... }
+#     - speed_increase: <booleano>      // Activar incremento de velocidad
+#     - level_up_each: <entero>         // Puntos necesarios para subir nivel
+#     - speed_multiplier: <decimal>     // Multiplicador de velocidad por nivel
+#
+# 12. rules_line_clear { ... }
+#     - line_score: [<entero>, ...]     // Puntos por 1, 2, 3, 4 lineas
+#     - combo_bonus: <entero>           // Bonus por combos
+#     - level_multiplier: <decimal>     // Multiplicador de puntos por nivel
+#
+# 13. tetris { ... }
+#     - tick_ms: <entero>               // Velocidad inicial de caida (ms)
+#     - gravity: <entero>               // Gravedad (celdas por tick)
+#     - spawn: <cadena>                 // Posicion de aparicion ("top_center")
+#
 # ============================================================================
-
-# Expected color keys for board.colors:
-# - background, grid, ghost, walls
-
-# Piece structure:
-# - Each piece has: color, rotations, (optional) blast_radius, (optional) is_bomb
-# - rotations is a list of matrices (4x4) where 1 represents a block
-
-# Standard pieces: I, O, T, S, Z, J, L
-# Special pieces: bomb_1x1, bomb_2x2
-
-# Rotation matrix format:
-# - 4x4 matrix of 0/1
-# - 1 represents a block in that position
-# - Each piece can have 1-4 rotation states
-
-# Example piece definition:
-# piece_I {
-#     color = "#75E689";
-#     rotations = [
-#         [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]],
-#         [[0,1,0,0], [0,1,0,0], [0,1,0,0], [0,1,0,0]]
-#     ];
-# }
-
-# Bomb pieces:
-# - bomb_1x1: Explodes in 3x3 area (color #808080)
-# - bomb_2x2: Explodes in 4x4 area (color #909090)
-# - blast_radius determines explosion size
-
+# Formato de Matrices de Rotacion
 # ============================================================================
-# End of Tetris BNF Grammar
+# - Cada pieza tiene una lista de rotaciones (1-4 rotaciones)
+# - Cada rotacion es una matriz 4x4 de enteros (0 o 1)
+# - 1 representa un bloque en esa posicion
+# - 0 representa espacio vacio
+# - Ejemplo de pieza I (horizontal y vertical):
+#
+#   rotations = [
+#       [
+#           [0,0,0,0],
+#           [1,1,1,1],
+#           [0,0,0,0],
+#           [0,0,0,0]
+#       ],
+#       [
+#           [0,1,0,0],
+#           [0,1,0,0],
+#           [0,1,0,0],
+#           [0,1,0,0]
+#       ]
+#   ];
+#
+# ============================================================================
+# Piezas Especiales - BOMBAS
+# ============================================================================
+# Las bombas son piezas especiales que explotan al aterrizar
+#
+# BOMBA 1x1:
+# - Color: #808080 (gris claro)
+# - Tamano: 1 bloque
+# - Explosion: area 3x3 centrada en la bomba
+# - Bonus puntos: 90 pts (3x3 x 10)
+# - blast_radius: 1 (interno, no usado directamente)
+# - is_bomb: true
+#
+# BOMBA 2x2:
+# - Color: #909090 (gris medio)
+# - Tamano: 4 bloques (2x2)
+# - Explosion: area 4x4 con la bomba 2x2 en el centro
+# - Bonus puntos: 160 pts (4x4 x 10)
+# - blast_radius: 4 (interno, no usado directamente)
+# - is_bomb: true
+#
+# Mecanica de explosion:
+# - Bomba 1x1 en (x,y) -> borra area desde (x-1,y-1) hasta (x+1,y+1)
+# - Bomba 2x2 en (x,y) -> borra area desde (x-1,y-1) hasta (x+2,y+2)
+# - No borra paredes (bordes del tablero)
+# - Otorga bonus de puntos segun area borrada
+#
+# Probabilidad de aparicion:
+# - Controlada por bomb_chance en rules_random_pieces
+# - Valor por defecto: 0.125 (12.5%)
+# - Rango valido: 0.0 (nunca) a 1.0 (siempre)
+#
+# ============================================================================
+# Colores Estandar de Piezas
+# ============================================================================
+# - piece_I: #75E689 (Verde)
+# - piece_O: #7599E6 (Azul)
+# - piece_T: #EB3B3B (Rojo)
+# - piece_J: #FFE824 (Amarillo)
+# - piece_L: #BD24FF (Morado)
+# - piece_S: #1D00FF (Azul oscuro)
+# - piece_Z: #177A06 (Verde oscuro)
+# - piece_bomb_1x1: #808080 (Gris claro)
+# - piece_bomb_2x2: #909090 (Gris medio)
+#
+# ============================================================================
+# Fin de la Gramatica BNF de Tetris
 # ============================================================================

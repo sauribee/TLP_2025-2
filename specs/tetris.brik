@@ -4,7 +4,6 @@ tetris version 1.0
 // Configuración del juego Tetris
 // ============================================================================
 // Este archivo define todas las reglas, piezas y comportamientos del Tetris
-// Compatible con Python 2.7 y el motor Brick Game Engine
 
 game "tetris" {
 
@@ -16,9 +15,9 @@ game "tetris" {
         height = 24;      // Alto del tablero (incluye paredes superior e inferior)
         colors {
             background = #000000;  // Negro - Fondo del tablero
-            grid       = #000000;  // Negro - Líneas de la grilla
-            ghost      = #BBBBBB;  // Gris claro - Pieza fantasma (preview de caída)
-            walls      = #555555;  // Gris oscuro - Paredes del tablero
+            grid = #000000;  // Negro - Líneas de la grilla
+            ghost = #BBBBBB;  // Gris claro - Pieza fantasma (preview de caída)
+            walls = #555555;  // Gris oscuro - Paredes del tablero
         }
     }
 
@@ -34,7 +33,7 @@ game "tetris" {
     // ------------------------------------------------------------------------
     controls {
         right_mov = "right";   // Mover pieza a la derecha
-        left_mov  = "left";    // Mover pieza a la izquierda
+        left_mov = "left";    // Mover pieza a la izquierda
         super_drop = "down";   // Caída rápida (soft drop)
         rotate = "up";         // Rotar pieza
         pause = "p";           // Pausar juego
